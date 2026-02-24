@@ -10,7 +10,7 @@ def register_lead_to_webinar(lead,_):
     if not lead.facebook_form_id:
         return 
     
-    webinar = frappe.db.get_value("Webinar Mapping", {"facebook_form_id": lead.facebook_form_id},"webinar")
+    webinar = frappe.db.get_value("Webinar Mapping", {"form_id": lead.facebook_form_id},"webinar")
     
     if not webinar:
         failure = frappe.get_doc({
