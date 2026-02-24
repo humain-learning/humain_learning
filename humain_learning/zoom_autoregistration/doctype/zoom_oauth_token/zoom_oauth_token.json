@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-16 17:05:10.198398",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "access_token",
+  "token_type",
+  "expires_at",
+  "last_refreshed_at",
+  "refresh_now"
+ ],
+ "fields": [
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Password",
+   "label": "Access Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "token_type",
+   "fieldtype": "Data",
+   "label": "Token Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "expires_at",
+   "fieldtype": "Datetime",
+   "label": "Expires At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "refresh_now",
+   "fieldtype": "Button",
+   "label": "Refresh Now"
+  },
+  {
+   "fieldname": "last_refreshed_at",
+   "fieldtype": "Datetime",
+   "label": "Last Refreshed At",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-02-18 13:50:52.172024",
+ "modified_by": "Administrator",
+ "module": "Zoom Autoregistration",
+ "name": "Zoom OAuth Token",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

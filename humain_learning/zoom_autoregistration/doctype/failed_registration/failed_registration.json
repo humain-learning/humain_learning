@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "creation": "2026-02-23 11:22:56.542732",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "lead",
+  "webinar",
+  "facebook_form_id",
+  "column_break_hnfl",
+  "http_code",
+  "error_code",
+  "last_attempt_at",
+  "section_break_itfz",
+  "message",
+  "retry_registration"
+ ],
+ "fields": [
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "label": "Lead",
+   "options": "CRM Lead",
+   "reqd": 1
+  },
+  {
+   "fieldname": "webinar",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Webinar",
+   "options": "Zoom Webinar"
+  },
+  {
+   "fieldname": "http_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "HTTP Code"
+  },
+  {
+   "fieldname": "error_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Error Code"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Message"
+  },
+  {
+   "fieldname": "column_break_hnfl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_itfz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "retry_registration",
+   "fieldtype": "Button",
+   "label": "Retry Registration"
+  },
+  {
+   "fieldname": "last_attempt_at",
+   "fieldtype": "Datetime",
+   "label": "Last Attempt At",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "lead.facebook_form_id",
+   "fieldname": "facebook_form_id",
+   "fieldtype": "Data",
+   "label": "Facebook Form ID"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-02-23 16:33:39.918081",
+ "modified_by": "Administrator",
+ "module": "Zoom Autoregistration",
+ "name": "Failed Registration",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "lead"
+}

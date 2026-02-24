@@ -1,0 +1,54 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-18 16:43:16.362288",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "action",
+  "column_break_oneh",
+  "facebook_lead_form",
+  "form_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "label": "Action",
+   "options": "Webinar\nDirect Sale\nHackathon\nDemo Class"
+  },
+  {
+   "fieldname": "facebook_lead_form",
+   "fieldtype": "Link",
+   "label": "Facebook Lead Form",
+   "options": "Facebook Lead Form"
+  },
+  {
+   "fieldname": "column_break_oneh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "facebook_lead_form.id",
+   "fieldname": "form_id",
+   "fieldtype": "Data",
+   "label": "Form ID",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-18 16:47:22.329312",
+ "modified_by": "Administrator",
+ "module": "Humain Learning",
+ "name": "Campaign Purpose",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -137,13 +137,21 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "CRM Lead": {
+        "before_insert": [
+            "humain_learning.humain_learning.lead_controller.assign_campaign",
+            "humain_learning.humain_learning.lead_controller.standardize_mobile",
+            ],
+        "after_insert": [
+            "humain_learning.zoom_autoregistration.lead_hooks.register_lead_to_webinar"
+            ]
+    }
+}
+
+doctype_list_js = {
+    "Failed Registration": "humain_learning.public/js/failed_registration_list.js"
+}
 
 # Scheduled Tasks
 # ---------------
@@ -165,7 +173,18 @@ app_license = "mit"
 # 		"humain_learning.tasks.monthly"
 # 	],
 # }
+scheduler_events = {
+    "cron": {
+        "*/30 * * * *": [
+            "humain_learning.zoom_autoregistration.oauth.auth.refresh_token"
+        ]
+    }
+}
 
+fixtures = [
+    "Custom Field",
+    "Property Setter"
+]
 # Testing
 # -------
 
