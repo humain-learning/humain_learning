@@ -25,7 +25,14 @@ def register_lead_to_webinar(lead,_):
         })
         failure.insert(ignore_permissions=True)
         return
-    frappe.enqueue(register_to_webinar, lead=lead.name, webinar=webinar, queue="short", timeout=30)
+    frappe.enqueue(
+        register_to_webinar,
+        lead=lead.name,
+        webinar=webinar,
+        queue="short",
+        timeout=30,
+        enqueue_after_commit=True
+    )
 
 
 
