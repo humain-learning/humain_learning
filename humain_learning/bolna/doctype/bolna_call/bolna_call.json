@@ -1,0 +1,154 @@
+{
+ "actions": [],
+ "autoname": "field:execution_id",
+ "creation": "2026-04-06 11:25:34.724384",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "call_metadata_section",
+  "execution_id",
+  "lead",
+  "bolna_agent",
+  "status",
+  "call_type",
+  "call_duration",
+  "column_break_jtph",
+  "recipient_no",
+  "error_message",
+  "recording_url",
+  "play_audio",
+  "section_break_xfuk",
+  "transcript",
+  "extracted_data",
+  "summary"
+ ],
+ "fields": [
+  {
+   "fieldname": "execution_id",
+   "fieldtype": "Data",
+   "label": "Execution ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Lead",
+   "options": "CRM Lead",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bolna_agent",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Bolna Agent",
+   "options": "Bolna Agent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "queued\nrescheduled\ninitiated\nringing\nin-progress\ncall-disconnected\ncompleted\nbalance-low\nbusy\nno-answer\ncanceled\nfailed\nstopped\nerror",
+   "read_only": 1
+  },
+  {
+   "fieldname": "call_duration",
+   "fieldtype": "Duration",
+   "in_list_view": 1,
+   "label": "Call Duration",
+   "read_only": 1
+  },
+  {
+   "fieldname": "error_message",
+   "fieldtype": "Data",
+   "label": "Error Message",
+   "read_only": 1
+  },
+  {
+   "fieldname": "extracted_data",
+   "fieldtype": "JSON",
+   "label": "Extracted Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "call_metadata_section",
+   "fieldtype": "Section Break",
+   "label": "Call Metadata"
+  },
+  {
+   "fieldname": "column_break_jtph",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_xfuk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "recording_url",
+   "fieldtype": "Data",
+   "label": "Recording URL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transcript",
+   "fieldtype": "Long Text",
+   "label": "Transcript",
+   "read_only": 1
+  },
+  {
+   "fieldname": "summary",
+   "fieldtype": "Small Text",
+   "label": "Summary",
+   "read_only": 1
+  },
+  {
+   "fieldname": "play_audio",
+   "fieldtype": "HTML",
+   "label": "Play Audio"
+  },
+  {
+   "fieldname": "call_type",
+   "fieldtype": "Select",
+   "label": "Call Type",
+   "options": "Outgoing\nIncoming",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "lead.mobile_no",
+   "fieldname": "recipient_no",
+   "fieldtype": "Data",
+   "label": "Recipient No",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-08 16:26:31.854652",
+ "modified_by": "Administrator",
+ "module": "Bolna",
+ "name": "Bolna Call",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "lead"
+}

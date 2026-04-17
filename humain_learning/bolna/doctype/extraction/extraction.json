@@ -1,0 +1,42 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-07 17:53:05.656214",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section",
+  "extraction"
+ ],
+ "fields": [
+  {
+   "fieldname": "section",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Section"
+  },
+  {
+   "fieldname": "extraction",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Extraction",
+   "options": "\nLead Intent\nRelevance\nAttendance"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-17 14:46:37.299381",
+ "modified_by": "Administrator",
+ "module": "Bolna",
+ "name": "Extraction",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

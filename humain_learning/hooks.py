@@ -144,13 +144,15 @@ doc_events = {
             "humain_learning.humain_learning.lead_controller.standardize_mobile",
             ],
         "after_insert": [
-            "humain_learning.zoom_autoregistration.lead_hooks.register_lead_to_webinar"
+			"humain_learning.zoom_autoregistration.lead_hooks.register_lead_to_webinar",
+			"humain_learning.bolna.lead_hooks.call_via_agent"
             ]
     }
 }
 
 doctype_list_js = {
-    "Failed Registration": "humain_learning.public/js/failed_registration_list.js"
+    "Bolna Agent": "public/js/bolna_agent_list.js",
+	"Bolna Phone": "public/js/bolna_phone_list.js"
 }
 
 # Scheduled Tasks

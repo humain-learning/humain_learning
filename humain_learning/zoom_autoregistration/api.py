@@ -3,7 +3,7 @@ import frappe
 from frappe.utils import get_datetime,now_datetime
 import requests
 from .utils import extract_error
-
+from datetime import timedelta
 ZOOM_BASE_URL = "https://api.zoom.us/v2"
 
 @frappe.whitelist()
@@ -117,7 +117,8 @@ def register_to_webinar(lead,webinar):
 			"parenttype": "Zoom Webinar",
 			"parentfield": "registrants",
 			"registrant": lead.name,
-			"registered_on": frappe.utils.now_datetime()
+			"registered_on": frappe.utils.now_datetime(),
+            "join_url": r.json().get("join_url")
 		}).insert(ignore_permissions=True)
         return
     
@@ -167,7 +168,7 @@ def _retry_failed_registration(lead,webinar):
         frappe.db.set_value(
             "Failed Registration",
             {"lead": lead.name, "webinar": webinar.name},
-            {
+            {    
                 "http_code": None,
                 "error_code": None,
                 "message": str(e),
@@ -196,3 +197,36 @@ def _retry_failed_registration(lead,webinar):
         )
         
         return
+
+
+def shorten_url(registrant):
+	access_key = frappe.get_single("URL Shortner Credentials").get_password("access_key")
+	registrant = frappe.get_doc("Webinar Registrant", registrant)
+	expiry = frappe.db.get_value("Zoom Webinar", registrant.parent, "start_time") + timedelta(hours=1)
+	join_url = registrant.join_url
+	if not join_url:
+		return
+	if join_url.startswith("https://hlai.in"):
+		return
+    
+	base_url = "https://hlai.in/api/developer/shorten-url"
+    
+	headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-API-KEY": access_key
+	}
+    
+	payload = {
+        "original_url": join_url,
+        "expires_at": str(expiry)
+	}
+    
+	response = requests.post(base_url, data=payload, headers=headers, timeout=30)
+	if response.status_code != 200:
+		frappe.log_error(f"URL Shortening failed")
+		return
+	
+	data = response.json()
+    
+	registrant.db_set("join_url", data.get("shortened_url"))
