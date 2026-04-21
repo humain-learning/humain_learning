@@ -10,6 +10,8 @@ class BolnaCall(Document):
 		if self.has_value_changed("status"):
 			update_lead_status(self)
 			
-		if self.has_value_changed("extracted_data") and self.status=="completed":
+		if self.has_value_changed("extracted_data") and self.status=="completed" and not self.extractions_processed:
 			process_extractions(self)
+			self.db_set("extractions_processed", 1, update_modified=False)
+
 

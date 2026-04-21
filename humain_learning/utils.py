@@ -1,3 +1,5 @@
-from frappe.utils import get_datetime
+from frappe.utils import get_datetime, convert_utc_to_system_timezone
+
+
 def system_datetime(dt):
-	return get_datetime(dt).replace(tzinfo=None)
+	return convert_utc_to_system_timezone(get_datetime(dt)).replace(tzinfo=None)

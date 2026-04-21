@@ -24,18 +24,23 @@ frappe.ui.form.on("Bolna Call", {
 				frappe.throw("No extractions found.");
 				return;
 			};
-
-			frappe.call({
+			if(!frm.doc.extractions_processed) {
+				frappe.call({
 				method: "humain_learning.bolna.services.process_extractions",
 				args: {
-					call_doc: frm.doc
+					call_doc: frm.doc.name
 				},
 				callback: function(r) {
 					if (!r.exc) {
-						frappe.msgprint("Extractions processed and lead updated")
+						frappe.msgprint("Extractions processed and lead updated.")
 					}
 				}
 			})
+			}
+			else {
+				frappe.throw("Extractions already processed.")
+			}
+			
 		});
 	}
 });

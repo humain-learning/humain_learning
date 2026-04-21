@@ -21,6 +21,7 @@
   "section_break_xfuk",
   "transcript",
   "extracted_data",
+  "extractions_processed",
   "summary"
  ],
  "fields": [
@@ -51,7 +52,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "queued\nrescheduled\ninitiated\nringing\nin-progress\ncall-disconnected\ncompleted\nbalance-low\nbusy\nno-answer\ncanceled\nfailed\nstopped\nerror",
+   "options": "queued\nscheduled\ninitiated\nringing\nin-progress\ncall-disconnected\ncompleted\nbalance-low\nbusy\nno-answer\ncanceled\nfailed\nstopped\nerror",
    "read_only": 1
   },
   {
@@ -128,12 +129,19 @@
    "fieldtype": "Datetime",
    "label": "Last Updated At",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "extractions_processed",
+   "fieldtype": "Check",
+   "label": "Extractions Processed",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-20 17:41:12.456469",
+ "modified": "2026-04-21 18:36:59.749528",
  "modified_by": "Administrator",
  "module": "Bolna",
  "name": "Bolna Call",

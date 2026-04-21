@@ -39,7 +39,7 @@ def sync_bolna_agents():
 			new_agents += 1
 	return new_agents
 
-
+@frappe.whitelist()
 def process_extractions(call_doc):
 	if type(call_doc) == str:
 		call_doc = frappe.get_doc("Bolna Call", call_doc)
@@ -56,6 +56,7 @@ def process_extractions(call_doc):
 				lead.custom_intent = value
 		
 	lead.save(ignore_permissions=True)
+	call_doc.db_set("extractions_processed", 1, update_modified=False)
 
 
 def extractions_to_dict(extracted_data, agent):

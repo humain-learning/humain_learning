@@ -2,8 +2,8 @@ import requests
 import frappe
 
 BOLNA_BASE_URL = "https://api.bolna.ai/"
-# ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
-ALLOWED_BOLNA_SOURCES = []
+ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
+# ALLOWED_BOLNA_SOURCES = []
 
 def bolna_headers():
 	return {
