@@ -1,5 +1,6 @@
 import frappe
-from .api import trigger_call
+from .client import trigger_call
+from frappe.utils import now_datetime
 
 def call_via_agent(lead,_):
 
@@ -20,6 +21,8 @@ def call_via_agent(lead,_):
 	if not bolna_call.get("execution_id"):
 		frappe.log_error(f"Failed to trigger call for lead {lead.name} via Bolna. Response: {bolna_call}")
 		return
+	
+
 	frappe.get_doc({
 		"doctype": "Bolna Call",
 		"execution_id": bolna_call.get("execution_id"),
@@ -27,5 +30,6 @@ def call_via_agent(lead,_):
 		"recipient_no": lead.mobile_no,
 		"status": bolna_call.get("status"),
 		"bolna_agent": campaign.custom_outgoing_agent,
-		"call_type": "Outgoing"
+		"call_type": "Outgoing",
+		"last_updated_at": now_datetime()
 	}).insert(ignore_permissions=True)

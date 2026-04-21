@@ -4,6 +4,7 @@ from frappe.utils import get_datetime,now_datetime
 import requests
 from .utils import extract_error
 from datetime import timedelta
+from humain_learning.utils import system_datetime
 ZOOM_BASE_URL = "https://api.zoom.us/v2"
 
 @frappe.whitelist()
@@ -60,9 +61,9 @@ def fetch_webinar(webinar_id):
     # Success path
     tz = ZoneInfo(frappe.get_system_settings("time_zone"))
 
-    start_time = get_datetime(data.get("start_time")).astimezone(tz).replace(tzinfo=None)
+    start_time = system_datetime(data.get("start_time"))
 
-    created_at = get_datetime(data.get("created_at")).astimezone(tz).replace(tzinfo=None)
+    created_at = system_datetime(data.get("created_at"))
 
     return {
         "topic": data.get("topic"),

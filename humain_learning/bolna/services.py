@@ -1,16 +1,19 @@
 import frappe
-from .api import *
-
+from .client import get_all_agents, get_all_phones
+from frappe.utils import now_datetime
+from humain_learning.utils import system_datetime
 
 @frappe.whitelist()
 def sync_bolna_phone():
-	phone = frappe.parse_json(get_all_phones()[0])
+	phones = frappe.parse_json(get_all_phones())
 
-	doc = frappe.get_doc("Bolna Phone")
-	doc.id = phone.id
-	doc.phone_no = phone.phone_number
-	doc.provider = phone.telephony_provider.capitalize()
-	doc.save(ignore_permissions=True)
+	return phones
+
+	# doc = frappe.get_doc("Bolna Phone")
+	# doc.id = phone.id
+	# doc.phone_no = phone.phone_number
+	# doc.provider = phone.telephony_provider.capitalize()
+	# doc.save(ignore_permissions=True)
 
 @frappe.whitelist()
 def sync_bolna_agents():
@@ -107,3 +110,41 @@ def add_comment_to_lead(call_doc):
 		"comment_by": f"Bolna Agent - {call_doc.bolna_agent}",
 		"comment_email": "bolna@system.local"
 	}).insert(ignore_permissions=True)
+
+def update_bolna_call_record(payload):
+	execution_id = payload.get("id")
+	status = payload.get("status")
+	
+	doc = frappe.get_doc("Bolna Call", execution_id)
+	doc.status = status
+	doc.error_message = payload.get("error_message") or ""
+
+	doc.last_updated_at = system_datetime(payload.get("updated_at"))
+	if payload.get("summary"):
+		doc.summary = payload.get("summary")
+	if payload.get("transcript"):
+		doc.transcript = payload.get("transcript")
+	if payload.get("extracted_data") is not None:
+		doc.extracted_data = payload.get("extracted_data")
+	if payload.get("telephony_data").get("duration") is not None:
+		doc.call_duration = payload.get("telephony_data").get("duration")
+	if payload.get("telephony_data").get("recording_url"):
+		doc.recording_url = payload.get("telephony_data").get("recording_url")
+
+	doc.save(ignore_permissions=True)
+	
+
+def create_bolna_call_for_incoming(payload,campaign):
+	lead = frappe.get_doc("CRM Lead", {"mobile_no": payload.get("contact_number"), "custom_campaign": campaign})
+	
+	frappe.get_doc({
+		"doctype": "Bolna Call",
+		"execution_id": payload.get("execution_id"),
+		"lead": lead.name,
+		"call_type": "Incoming",
+		"status": "queued",
+		"bolna_agent": payload.get("agent_id"),
+		"last_updated_at": now_datetime()
+	}).insert(ignore_permissions=True)
+	frappe.db.commit()
+	return lead

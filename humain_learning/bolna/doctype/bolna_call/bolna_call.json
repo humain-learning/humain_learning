@@ -17,6 +17,7 @@
   "error_message",
   "recording_url",
   "play_audio",
+  "last_updated_at",
   "section_break_xfuk",
   "transcript",
   "extracted_data",
@@ -121,12 +122,18 @@
    "fieldtype": "Data",
    "label": "Recipient No",
    "read_only": 1
+  },
+  {
+   "fieldname": "last_updated_at",
+   "fieldtype": "Datetime",
+   "label": "Last Updated At",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-08 16:26:31.854652",
+ "modified": "2026-04-20 17:41:12.456469",
  "modified_by": "Administrator",
  "module": "Bolna",
  "name": "Bolna Call",
@@ -141,6 +148,17 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
    "share": 1,
    "write": 1
   }
