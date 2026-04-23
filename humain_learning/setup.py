@@ -27,6 +27,8 @@ def populate_bolna_call_status():
 				"id": status
 			}).insert(ignore_permissions=True)
 
+	frappe.db.commit()
+
 def setup_bolna_retry_config():
     config = frappe.get_doc("Bolna Retry Config")
     max_retries = 3
