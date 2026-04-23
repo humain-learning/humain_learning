@@ -3,7 +3,8 @@ from .client import trigger_call
 from frappe.utils import now_datetime
 
 def call_via_agent(lead,_):
-
+	if not lead.custom_campaign:
+		return
 	campaign = frappe.get_doc("Marketing Campaign",lead.custom_campaign)
 	if not campaign:
 		return

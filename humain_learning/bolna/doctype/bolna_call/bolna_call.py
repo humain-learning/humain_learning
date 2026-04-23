@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
-from ...services import process_extractions, update_lead_status
+from ...services import process_extractions, update_lead_status, add_comment_to_lead
 
 class BolnaCall(Document):
 	def on_update(self):
@@ -14,4 +14,5 @@ class BolnaCall(Document):
 			process_extractions(self)
 			self.db_set("extractions_processed", 1, update_modified=False)
 
-
+		if self.has_value_changed("summary") and self.summary:
+			add_comment_to_lead(self)

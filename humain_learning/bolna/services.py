@@ -33,7 +33,7 @@ def sync_bolna_agents():
 			frappe.get_doc({
 				"doctype": "Bolna Agent",
 				"agent_id": agent.id,
-				"agent_name": agent.agent_name,
+				"agent_name": agent.agent_name,  
 				"created_at": agent.created_at.replace("T", " ")
 			}).insert(ignore_permissions=True)
 			new_agents += 1
@@ -96,27 +96,35 @@ def extractions_to_dict(extracted_data, agent):
 
 def update_lead_status(call_doc):
 	lead = frappe.get_doc("CRM Lead", call_doc.lead)
-
 	lead.custom_bolna_call_status = call_doc.status
+	if call_doc.status == "completed":
+		lead.status = "Contacted"
+	elif call_doc.retry_count == frappe.db.get_single_value("Bolna Retry Config", "max_retries"):
+		lead.status = "DNP"
 	lead.save(ignore_permissions=True)
 
 def add_comment_to_lead(call_doc):
+	agent_name = frappe.db.get_value("Bolna Agent", call_doc.bolna_agent, "agent_name")
 	
-	frappe.get_doc({
+	doc = frappe.get_doc({
 		"doctype": "Comment",
-		"comment_type": "Info",
+		"comment_type": "Comment",
 		"reference_doctype": "CRM Lead",
 		"reference_name": call_doc.lead,
-		"content": f"Bolna Call Summary - {call_doc.summary}",
-		"comment_by": f"Bolna Agent - {call_doc.bolna_agent}",
-		"comment_email": "bolna@system.local"
-	}).insert(ignore_permissions=True)
+		"content": f"Call Summary from {agent_name}:\n {call_doc.summary}",
+	})
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
 
 def update_bolna_call_record(payload):
 	execution_id = payload.get("id")
 	status = payload.get("status")
 	
 	doc = frappe.get_doc("Bolna Call", execution_id)
+	doc.reload()
+
+	if payload.get("retry_count") > 0 and status == 'scheduled':
+		status = 'rescheduled'
 	doc.status = status
 	doc.error_message = payload.get("error_message") or ""
 
@@ -131,6 +139,9 @@ def update_bolna_call_record(payload):
 		doc.call_duration = payload.get("telephony_data").get("duration")
 	if payload.get("telephony_data").get("recording_url"):
 		doc.recording_url = payload.get("telephony_data").get("recording_url")
+	if payload.get("retry_count"):
+		doc.retry_count = payload.get("retry_count")
+		doc.retry_history = str(payload.get("retry_history"))
 
 	doc.save(ignore_permissions=True)
 	

@@ -18,6 +18,8 @@
   "recording_url",
   "play_audio",
   "last_updated_at",
+  "retry_count",
+  "retry_history",
   "section_break_xfuk",
   "transcript",
   "extracted_data",
@@ -49,10 +51,10 @@
   },
   {
    "fieldname": "status",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Status",
-   "options": "queued\nscheduled\ninitiated\nringing\nin-progress\ncall-disconnected\ncompleted\nbalance-low\nbusy\nno-answer\ncanceled\nfailed\nstopped\nerror",
+   "options": "Bolna Call Status",
    "read_only": 1
   },
   {
@@ -136,12 +138,24 @@
    "fieldtype": "Check",
    "label": "Extractions Processed",
    "read_only": 1
+  },
+  {
+   "fieldname": "retry_count",
+   "fieldtype": "Int",
+   "label": "Retry Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "retry_history",
+   "fieldtype": "Small Text",
+   "label": "Retry History",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-21 18:36:59.749528",
+ "modified": "2026-04-23 11:42:12.247672",
  "modified_by": "Administrator",
  "module": "Bolna",
  "name": "Bolna Call",

@@ -1,6 +1,6 @@
 import requests
 import frappe
-
+from .utils import build_retry_config
 BOLNA_BASE_URL = "https://api.bolna.ai/"
 ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
 # ALLOWED_BOLNA_SOURCES = []
@@ -53,13 +53,8 @@ def trigger_call(lead_name,campaign_name):
 		**bolna_headers(),
 		"Content-Type": "application/json"
 	}
-	retry_config = {
-		"enabled": True,
-		"max_retries": 3,
-		"retry_on_statuses": ["no-answer", "failed", "busy", "error"],
-		"retry_intervals_minutes": [15,15,15],
-		"retry_on_voicemail": False
-	}
+	retry_config = build_retry_config()
+	
 	payload = {
 		"agent_id": agent_id,
 		"recipient_phone_number": recipient_phone,
@@ -71,5 +66,4 @@ def trigger_call(lead_name,campaign_name):
 	}
 
 	response = requests.post(url, json=payload, headers=headers)
-	print(response.request.body)
 	return response.json()

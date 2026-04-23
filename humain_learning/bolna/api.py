@@ -2,11 +2,11 @@ import requests
 import frappe
 import ipaddress
 import json
-from humain_learning.utils import system_datetime
+from humain_learning.utils import ist_to_utc
 from .utils import _client_ip, _ip_allowed
 from .services import update_bolna_call_record, create_bolna_call_for_incoming
-# ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
-ALLOWED_BOLNA_SOURCES = []
+ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
+# ALLOWED_BOLNA_SOURCES = []
 
 
 
@@ -41,11 +41,16 @@ def bolna_webhook():
 
 	if not frappe.db.exists("Bolna Call", execution_id):
 		frappe.logger("bolna").warning("No Bolna Call found for execution_id=%s", execution_id)
-		return {"status": "ok", "message": f"No Bolna Call found for {execution_id}"}
+		frappe.response.http_status_code = 404
+		return {
+			"status": "error",
+			"message": f"No Bolna Call record found",
+			"received_keys": sorted(payload.keys()) if isinstance(payload, dict) else []
+		}
 	
 	last_update = frappe.db.get_value("Bolna Call", execution_id, "last_updated_at")
 
-	if last_update >= system_datetime(payload.get("updated_at")):
+	if ist_to_utc(last_update) >= payload.get("updated_at"):
 		return {"status": "ok", "message": "Received older update. Ignoring."}
 	
 	update_bolna_call_record(payload)

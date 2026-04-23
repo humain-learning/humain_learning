@@ -30,3 +30,16 @@ def _ip_allowed(ip_str, ALLOWED_BOLNA_SOURCES):
 
 	return False
 
+def build_retry_config():
+	config = frappe.get_single("Bolna Retry Config")
+	if not config.enabled:
+		return None
+	
+	else: 
+		return {
+		"enabled": True,
+		"max_retries": config.max_retries,
+		"retry_on_statuses": config.get_retry_statuses(),
+		"retry_intervals_minutes": config.get_intervals(),
+		"retry_on_voicemail": True if config.retry_on_voicemail else False
+		}
