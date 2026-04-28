@@ -30,26 +30,29 @@ def populate_bolna_call_status():
 	frappe.db.commit()
 
 def setup_bolna_retry_config():
-    config = frappe.get_doc("Bolna Retry Config")
-    max_retries = 3
-    intervals = [11, 11, 11]
-    statuses = ["failed", "busy", "error", "no-answer"]
+	config = frappe.get_doc("Bolna Retry Config")
+	max_retries = 3
+	intervals = [120, 120, 120]
+	statuses = ["failed", "busy", "error", "no-answer"]
 
-    intervals_json = json.dumps(intervals, separators=(",", ":"))
+	intervals_json = json.dumps(intervals, separators=(",", ":"))
 
-    config.enabled = 1
-    config.retry_on_voicemail = 1
-    config.max_retries = max_retries
-    config.retry_interval_minutes = intervals_json
+	config.enabled = 1
+	config.retry_on_voicemail = 1
+	config.max_retries = max_retries
+	config.retry_interval_minutes = intervals_json
 
-    config.set("retry_on_statuses", [])
-    for s in statuses:
-        config.append("retry_on_statuses", {"status": s})
+	config.set("retry_on_statuses", [])
+	for s in statuses:
+		config.append("retry_on_statuses", {"status": s})
 
-    config.save(ignore_permissions=True)
-    frappe.db.commit()
+	config.save(ignore_permissions=True)
+	frappe.db.commit()
 
 def after_install():
 	populate_bolna_call_status()
 	setup_bolna_retry_config()
-	sync_bolna_agents()
+	try:
+		sync_bolna_agents()
+	except Exception:
+		frappe.log_error(title="after_install: sync_bolna_agents failed")

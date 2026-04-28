@@ -119,7 +119,14 @@ def add_comment_to_lead(call_doc):
 def update_bolna_call_record(payload):
 	execution_id = payload.get("id")
 	status = payload.get("status")
-	
+
+	frappe.logger("bolna").info(
+		"Processing webhook | execution_id=%s | status=%s | retry_count=%s",
+		execution_id,
+		status,
+		payload.get("retry_count", 0),
+	)
+
 	doc = frappe.get_doc("Bolna Call", execution_id)
 	doc.reload()
 
@@ -158,5 +165,7 @@ def create_bolna_call_for_incoming(payload,campaign):
 		"bolna_agent": payload.get("agent_id"),
 		"last_updated_at": now_datetime()
 	}).insert(ignore_permissions=True)
+	lead.custom_bolna_exec_id = payload.get("execution_id")
+	lead.save(ignore_permissions=True)
 	frappe.db.commit()
 	return lead
