@@ -5,8 +5,8 @@ import json
 from humain_learning.utils import ist_to_utc
 from .utils import _client_ip, _ip_allowed
 from .services import update_bolna_call_record, create_bolna_call_for_incoming
-ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
-# ALLOWED_BOLNA_SOURCES = []
+# ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
+ALLOWED_BOLNA_SOURCES = []
 
 
 
@@ -24,6 +24,7 @@ def bolna_webhook():
 	payload = frappe.form_dict
 
 	execution_id = payload.get("id")
+
 
 	frappe.logger("bolna").info(
 		"Webhook received | execution_id=%s | keys=%s",

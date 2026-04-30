@@ -40,7 +40,7 @@ def get_all_phones():
 		return response.json()
 		
 	
-def trigger_call(lead_name,campaign_name):
+def trigger_call(lead_name,campaign_name,retry):
 	lead = frappe.get_doc("CRM Lead", lead_name)
 	campaign = frappe.get_doc("Marketing Campaign", campaign_name)
 
@@ -53,17 +53,27 @@ def trigger_call(lead_name,campaign_name):
 		**bolna_headers(),
 		"Content-Type": "application/json"
 	}
-	retry_config = build_retry_config()
+	if retry:
+		retry_config = build_retry_config()
 	
-	payload = {
-		"agent_id": agent_id,
-		"recipient_phone_number": recipient_phone,
-		"from_phone_number": from_phone,
-		"user_data":{
-			"name": lead.lead_name
-		},
-		"retry_config": retry_config
-	}
+		payload = {
+			"agent_id": agent_id,
+			"recipient_phone_number": recipient_phone,
+			"from_phone_number": from_phone,
+			"user_data":{
+				"name": lead.lead_name
+			},
+			"retry_config": retry_config
+		}
+	else:
+		payload = {
+			"agent_id": agent_id,
+			"recipient_phone_number": recipient_phone,
+			"from_phone_number": from_phone,
+			"user_data":{
+				"name": lead.lead_name
+			}
+		}
 
 	response = requests.post(url, json=payload, headers=headers)
 	return response.json()
