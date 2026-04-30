@@ -16,10 +16,10 @@ def bolna_webhook():
 		frappe.response.http_status_code = 405
 		return {"status": "error", "message": "Method not allowed"}
 
-	client_ip = _client_ip()
-	if not _ip_allowed(client_ip, ALLOWED_BOLNA_SOURCES):
-		frappe.response.http_status_code = 403
-		return {"status": "error", "message": "Forbidden"}
+	# client_ip = _client_ip()
+	# if not _ip_allowed(client_ip, ALLOWED_BOLNA_SOURCES):
+	# 	frappe.response.http_status_code = 403
+	# 	return {"status": "error", "message": "Forbidden"}
 
 	payload = frappe.form_dict
 
