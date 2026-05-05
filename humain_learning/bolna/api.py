@@ -5,8 +5,8 @@ import json
 from humain_learning.utils import ist_to_utc
 from .utils import _client_ip, _ip_allowed
 from .services import update_bolna_call_record, create_bolna_call_for_incoming
-# ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
-ALLOWED_BOLNA_SOURCES = []
+ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
+# ALLOWED_BOLNA_SOURCES = []
 
 
 
@@ -16,10 +16,10 @@ def bolna_webhook():
 		frappe.response.http_status_code = 405
 		return {"status": "error", "message": "Method not allowed"}
 
-	# client_ip = _client_ip()
-	# if not _ip_allowed(client_ip, ALLOWED_BOLNA_SOURCES):
-	# 	frappe.response.http_status_code = 403
-	# 	return {"status": "error", "message": "Forbidden"}
+	client_ip = _client_ip()
+	if not _ip_allowed(client_ip, ALLOWED_BOLNA_SOURCES):
+		frappe.response.http_status_code = 403
+		return {"status": "error", "message": "Forbidden"}
 
 	payload = frappe.form_dict
 
