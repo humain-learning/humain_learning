@@ -146,8 +146,12 @@ doc_events = {
         "after_insert": [
 			"humain_learning.zoom_autoregistration.lead_hooks.register_lead_to_webinar",
 			"humain_learning.bolna.lead_hooks.call_via_agent"
-            ]
-    }
+            ],
+		"on_update": "humain_learning.meta_capi.hooks.handle_meta_capi_event"
+    },
+	"CRM Deal": {
+		"on_update": "humain_learning.meta_capi.hooks.handle_meta_capi_event"
+	}
 }
 
 doctype_list_js = {
@@ -269,4 +273,4 @@ fixtures = [
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
-after_install = "humain_learning.setup.after_install"
+after_install = "humain_learning.setup.install.after_install"

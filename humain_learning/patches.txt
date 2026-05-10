@@ -1,4 +1,3 @@
 [pre_model_sync]
 
 [post_model_sync]
-humain_learning.patches.v1.run_initial_setup

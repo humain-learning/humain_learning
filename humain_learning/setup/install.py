@@ -1,6 +1,7 @@
 import frappe
 import json
-from .bolna.services import sync_bolna_agents
+from ..bolna.services import sync_bolna_agents
+
 def populate_bolna_call_status():
 	statuses = [
 		'rescheduled',
@@ -48,6 +49,13 @@ def setup_bolna_retry_config():
 
 	config.save(ignore_permissions=True)
 	frappe.db.commit()
+
+def setup_meta_event_names():
+	event_names = [
+		"Contact",
+		"QualifiedLead",
+		"Purchase"
+	]
 
 def after_install():
 	populate_bolna_call_status()
