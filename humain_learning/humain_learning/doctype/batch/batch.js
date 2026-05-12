@@ -4,7 +4,7 @@
 frappe.ui.form.on("Batch", {
 	fetch_batch(frm) {
         frappe.call ({
-            method: 'admin.admin.api.canvas.get_single_course_details',
+            method: 'humain_learning.client.canvas.get_single_course_details',
             args: {
                 course_id: frm.doc.course_id,
                 template: false

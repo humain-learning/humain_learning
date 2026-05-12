@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2026-03-11 11:25:13.157810",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "course",
+  "base_price",
+  "event",
+  "enabled",
+  "discount_tiers"
+ ],
+ "fields": [
+  {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Course",
+   "options": "Template Course",
+   "reqd": 1
+  },
+  {
+   "fieldname": "event",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Event",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "course.price",
+   "fieldname": "base_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Base Price",
+   "reqd": 1
+  },
+  {
+   "fieldname": "discount_tiers",
+   "fieldtype": "Table",
+   "label": "Discount Tier",
+   "options": "Discount Tier",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-24 17:46:47.264210",
+ "modified_by": "Administrator",
+ "module": "Humain Learning",
+ "name": "Web Discount",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "event"
+}
