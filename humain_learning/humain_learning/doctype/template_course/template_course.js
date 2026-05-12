@@ -8,7 +8,7 @@ frappe.ui.form.on("Template Course", {
             return;
         }
         frappe.call({
-            method : 'admin.admin.api.canvas.get_single_course_details',
+            method : 'humain_learning.humain_learning.client.canvas.get_single_course_details',
             args: {
                 course_id: frm.doc.course_id ,
                 template: true

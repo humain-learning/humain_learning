@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-11 11:30:00.428452",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "start_datetime",
+  "end_datetime",
+  "discount_percent",
+  "final_price"
+ ],
+ "fields": [
+  {
+   "fieldname": "start_datetime",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Start DateTime",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_datetime",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "End DateTime",
+   "reqd": 1
+  },
+  {
+   "fieldname": "discount_percent",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Discount Percent",
+   "precision": "0",
+   "reqd": 1
+  },
+  {
+   "fieldname": "final_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Final Price",
+   "precision": "0",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-11 17:05:31.872249",
+ "modified_by": "Administrator",
+ "module": "Humain Learning",
+ "name": "Discount Tier",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
