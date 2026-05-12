@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "autoname": "field:canvas_id",
+ "creation": "2026-02-26 14:21:05.857503",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sub_account_name",
+  "canvas_id",
+  "slug"
+ ],
+ "fields": [
+  {
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "label": "Slug"
+  },
+  {
+   "fieldname": "canvas_id",
+   "fieldtype": "Int",
+   "label": "Canvas ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "sub_account_name",
+   "fieldtype": "Data",
+   "label": "Sub Account Name",
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-02 17:26:55.331011",
+ "modified_by": "Administrator",
+ "module": "Humain Learning",
+ "name": "Sub Account",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "sub_account_name"
+}

@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:course_id",
+ "creation": "2026-02-26 15:22:03.254477",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "course_details_section",
+  "course_name",
+  "course_id",
+  "price",
+  "column_break_ixit",
+  "sub_account",
+  "code",
+  "fetch_course_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "course_details_section",
+   "fieldtype": "Section Break",
+   "label": "Course Details"
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Course Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sub_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sub Account",
+   "options": "Sub Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "course_id",
+   "fieldtype": "Int",
+   "label": "Course ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_ixit",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fetch_course_details",
+   "fieldtype": "Button",
+   "label": "Fetch Course Details"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-09 17:00:42.350934",
+ "modified_by": "Administrator",
+ "module": "Humain Learning",
+ "name": "Template Course",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "course_name"
+}
