@@ -3,7 +3,6 @@ import time
 from frappe.utils import now
 from .utils import sha256_hash, sha256_hash_phone
 from.client import send_meta_event
-import re
 
 def process_meta_capi_event(doc, method):
 
@@ -42,6 +41,21 @@ def process_meta_event(event_id, doc, event):
 	if event.event_name == "Purchase":
 		custom_data["currency"] = "INR"
 		custom_data["value"] = doc.deal_value
+	user_data = {}
+
+	if lead_id:
+		user_data["lead_id"] = lead_id
+	if doc.email:
+		user_data["em"] = [sha256_hash(doc.email)]
+	if doc.mobile_no:
+		user_data["ph"] = [sha256_hash_phone(doc.mobile_no)]
+	if doc.first_name:
+		user_data["fn"] = [sha256_hash(doc.first_name)]
+	if doc.last_name:
+		user_data["ln"] = [sha256_hash(doc.last_name)]
+	if doc.custom_city:
+		user_data["ct"] = [sha256_hash(doc.custom_city)]
+	
 
 	payload = {
 		"data": [
@@ -50,19 +64,13 @@ def process_meta_event(event_id, doc, event):
 				"event_time": int(time.time()),
 				"event_id": event_id,
 				"action_source": "system_generated",
-				"user_data": {
-					"em": [sha256_hash(doc.email)],
-					"ph": [sha256_hash_phone(doc.mobile_no)],
-					"fn": [sha256_hash(doc.first_name)],
-					"ln": [sha256_hash(doc.last_name)],
-					"ct": [sha256_hash(doc.custom_city)],
-					"country": [sha256_hash("in")],
-					"lead_id": lead_id
-				},
+				"user_data": user_data,
 				"custom_data": custom_data
 			}
 		]
 	}
+
+
 	event_log = frappe.get_doc({
 			"doctype": "Meta Event Log",
 			"event_id": event_id,
@@ -75,14 +83,15 @@ def process_meta_event(event_id, doc, event):
 			"unix_time": int(time.time()),
 			"request_body": payload
 		})
+	
+
 	event_log.insert(ignore_permissions=True)
-	frappe.db.commit()
 
 	response = send_meta_event(event_id, payload)
+
 	event_log.http_code = response.status_code
 	event_log.save()
-	frappe.db.commit()
-	event_log.reload()
+
 	try:
 		data = response.json()
 	except Exception as e:
@@ -101,7 +110,7 @@ def process_meta_event(event_id, doc, event):
 		if data.get("events_received") == 1:
 			event_log.status = "Success"
 			event_log.response_body = data
-			
+			event_log.meta_message = data.get("messages")
 			frappe.logger("meta_capi").warning(f"Event {event_id} received successfully.")
 		else:
 			event_log.status = "Error"
@@ -125,5 +134,3 @@ def process_meta_event(event_id, doc, event):
 
 	event_log.save(ignore_permissions=True)
 	frappe.db.commit()
-
-

@@ -1,0 +1,188 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:course_id",
+ "creation": "2026-02-27 16:32:50.794329",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "batch_overview_section",
+  "course_name",
+  "course_id",
+  "batch_name",
+  "course_code",
+  "column_break_xwrs",
+  "template",
+  "sub_account",
+  "fetch_batch",
+  "batch_details_section",
+  "start_date",
+  "state",
+  "column_break_pjvf",
+  "end_date",
+  "section_break_uvud",
+  "itinerary",
+  "metadata_section",
+  "enabled",
+  "column_break_giwo",
+  "limited_seats",
+  "column_break_yfcn",
+  "sold_out"
+ ],
+ "fields": [
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Course Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "course_id",
+   "fieldtype": "Data",
+   "label": "Course ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Start Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "End Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "course_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Course Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Link",
+   "label": "State",
+   "options": "Course State",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xwrs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "template",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Template",
+   "options": "Template Course"
+  },
+  {
+   "fieldname": "fetch_batch",
+   "fieldtype": "Button",
+   "label": "Fetch Batch"
+  },
+  {
+   "fieldname": "sub_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sub Account",
+   "options": "Sub Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "batch_overview_section",
+   "fieldtype": "Section Break",
+   "label": "Batch Overview"
+  },
+  {
+   "fieldname": "batch_details_section",
+   "fieldtype": "Section Break",
+   "label": "Batch Details"
+  },
+  {
+   "fieldname": "column_break_pjvf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_uvud",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "itinerary",
+   "fieldtype": "Table",
+   "label": "Itinerary",
+   "options": "Itinerary"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "metadata_section",
+   "fieldtype": "Section Break",
+   "label": "Metadata"
+  },
+  {
+   "default": "0",
+   "fieldname": "limited_seats",
+   "fieldtype": "Check",
+   "label": "Limited Seats "
+  },
+  {
+   "default": "0",
+   "fieldname": "sold_out",
+   "fieldtype": "Check",
+   "label": "Sold Out"
+  },
+  {
+   "fieldname": "column_break_giwo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yfcn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "batch_name",
+   "fieldtype": "Data",
+   "label": "Batch Name"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-10 12:00:08.095296",
+ "modified_by": "Administrator",
+ "module": "Humain Learning",
+ "name": "Batch",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "course_name"
+}

@@ -39,6 +39,7 @@
   {
    "fieldname": "reference_name",
    "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
    "label": "Reference Name",
    "options": "reference_doctype",
    "read_only": 1
@@ -46,6 +47,7 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "Pending\nSuccess\nError",
    "read_only": 1
@@ -100,6 +102,7 @@
   {
    "fieldname": "event_name",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Event Name",
    "options": "Meta Event Name",
    "read_only": 1
@@ -117,7 +120,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-11 05:21:43.792899",
+ "modified": "2026-05-12 15:23:11.749889",
  "modified_by": "Administrator",
  "module": "Meta CAPI",
  "name": "Meta Event Log",
