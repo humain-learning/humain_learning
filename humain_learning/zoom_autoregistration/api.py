@@ -59,16 +59,16 @@ def fetch_webinar(webinar_id):
         frappe.throw(f"Zoom Error: {err_msg}")
 
     # Success path
-    tz = ZoneInfo(frappe.get_system_settings("time_zone"))
 
     start_time = system_datetime(data.get("start_time"))
 
     created_at = system_datetime(data.get("created_at"))
-
+	 
     return {
         "topic": data.get("topic"),
         "start_time": start_time,
         "created_at": created_at,
+        "end_time": start_time + timedelta(minutes=data.get("duration", 0)),
         "host_email": data.get("host_email"),
     }
     
@@ -231,3 +231,38 @@ def shorten_url(registrant):
 	data = response.json()
     
 	registrant.db_set("join_url", data.get("shortened_url"))
+
+def _ordinal_suffix(day):
+    if 11 <= day % 100 <= 13:
+        return "th"
+    return {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
+
+
+@frappe.whitelist()
+def latest_webinar_details(template_id):
+    webinars = frappe.get_all(
+        "Zoom Webinar",
+        filters={"template_course": str(template_id), "start_time": [">=", now_datetime()]},
+        order_by="start_time desc",
+        limit=1,
+        pluck="name",
+    )
+
+    if not webinars:
+        return None
+
+    doc = frappe.get_doc("Zoom Webinar", webinars[0])
+    start_dt = get_datetime(doc.start_time)
+    end_dt = get_datetime(doc.end_time) if getattr(doc, "end_time", None) else None
+
+    if not end_dt and getattr(doc, "duration", None):
+        end_dt = start_dt + timedelta(minutes=doc.duration)
+
+    day = start_dt.day
+    date = f"{start_dt.strftime('%A')}, {day}{_ordinal_suffix(day)} {start_dt.strftime('%B %Y')}"
+
+    return {
+        "date": date,
+        "startTime": start_dt.strftime("%I:%M %p").lstrip("0"),
+        "endTime": end_dt.strftime("%I:%M %p").lstrip("0") if end_dt else "",
+    }

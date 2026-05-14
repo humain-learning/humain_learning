@@ -9,10 +9,12 @@
   "webinar_id",
   "topic",
   "host_email",
+  "template_course",
   "fetch_webinar_details",
   "column_break_mysp",
   "start_time",
   "created_at",
+  "end_time",
   "section_break_wgim",
   "registrants"
  ],
@@ -69,12 +71,24 @@
    "fieldtype": "Table",
    "label": "Registrants",
    "options": "Webinar Registrant"
+  },
+  {
+   "fieldname": "template_course",
+   "fieldtype": "Link",
+   "label": "Template Course",
+   "options": "Template Course"
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Datetime",
+   "label": "End Time",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-15 13:11:22.761340",
+ "modified": "2026-05-14 19:13:18.908883",
  "modified_by": "Administrator",
  "module": "Zoom Autoregistration",
  "name": "Zoom Webinar",

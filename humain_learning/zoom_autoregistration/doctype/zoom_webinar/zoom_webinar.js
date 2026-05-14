@@ -15,6 +15,7 @@ frappe.ui.form.on("Zoom Webinar", {
                     frm.set_value("start_time", r.message.start_time);
                     frm.set_value("created_at", r.message.created_at);
                     frm.set_value("host_email", r.message.host_email);
+					frm.set_value("end_time", r.message.end_time);
                 }
             }
         });
