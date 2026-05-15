@@ -46,3 +46,4 @@ def retry_failed_registration(lead,webinar):
         timeout=30
     )
     # _retry_failed_registration(lead,webinar_id)
+
