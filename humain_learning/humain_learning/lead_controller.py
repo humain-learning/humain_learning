@@ -19,6 +19,7 @@ def assign_campaign(lead,_):
                 "name": campaign_name,
                 "campaign_description": ""
             }).insert(ignore_permissions=True, ignore_if_duplicate=True)
+            
             lead.custom_campaign = campaign_name
     
 
