@@ -1,6 +1,6 @@
 from zoneinfo import ZoneInfo
 import frappe
-from frappe.utils import get_datetime,now_datetime
+from frappe.utils import get_datetime,now_datetime,getdate
 import requests
 from .utils import extract_error
 from datetime import timedelta
@@ -80,7 +80,7 @@ def register_to_webinar(lead,webinar):
     token_doc = frappe.get_single("Zoom OAuth Token")
     webinar = frappe.get_doc("Zoom Webinar", webinar)
     webinar_id = webinar.webinar_id.replace(" ", "")
-    
+    lead.reload()
     url = f"{ZOOM_BASE_URL}/webinars/{webinar_id}/registrants"
     
     headers = {
@@ -121,6 +121,14 @@ def register_to_webinar(lead,webinar):
 			"registered_on": frappe.utils.now_datetime(),
             "join_url": r.json().get("join_url")
 		}).insert(ignore_permissions=True)
+        dt = get_datetime(webinar.start_time)
+        time_str = dt.strftime("%-I:%M%p") if dt.minute != 0 else dt.strftime("%-I%p")
+        lead.db_set({
+			"custom_webinar": webinar.name,
+			"custom_webinar_title": webinar.topic,
+			"custom_webinar_date": getdate(dt),
+            "custom_webinar_time": time_str
+		})
         return
     
     else:
@@ -203,6 +211,7 @@ def _retry_failed_registration(lead,webinar):
 def shorten_url(registrant):
 	access_key = frappe.get_single("URL Shortner Credentials").get_password("access_key")
 	registrant = frappe.get_doc("Webinar Registrant", registrant)
+	lead = frappe.get_doc("CRM Lead", registrant.registrant)
 	expiry = frappe.db.get_value("Zoom Webinar", registrant.parent, "start_time") + timedelta(hours=1)
 	join_url = registrant.join_url
 	if not join_url:
@@ -231,6 +240,7 @@ def shorten_url(registrant):
 	data = response.json()
     
 	registrant.db_set("join_url", data.get("shortened_url"))
+	lead.db_set("custom_webinar_join_url", data.get("shortened_url"))
 
 def _ordinal_suffix(day):
     if 11 <= day % 100 <= 13:

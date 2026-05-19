@@ -143,11 +143,11 @@ doc_events = {
             "humain_learning.humain_learning.lead_controller.assign_campaign",
             "humain_learning.humain_learning.lead_controller.standardize_mobile",
             ],
-        "after_insert": [
+        "after_insert": "humain_learning.bolna.lead_hooks.call_via_agent",
+		"on_update": [
 			"humain_learning.zoom_autoregistration.lead_hooks.register_lead_to_webinar",
-			"humain_learning.bolna.lead_hooks.call_via_agent"
-            ],
-		"on_update": "humain_learning.meta_capi.hooks.handle_meta_capi_event"
+			"humain_learning.meta_capi.hooks.handle_meta_capi_event"		
+		]
     },
 	"CRM Deal": {
 		"on_update": "humain_learning.meta_capi.hooks.handle_meta_capi_event"

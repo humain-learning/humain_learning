@@ -1,7 +1,7 @@
 import frappe
 from humain_learning.zoom_autoregistration.api import register_to_webinar,_retry_failed_registration
 from frappe.utils import get_datetime, getdate
-    
+
 def register_lead_to_webinar(lead,_):
     if lead.custom_actionable != "Webinar":
         return
@@ -36,13 +36,7 @@ def register_lead_to_webinar(lead,_):
         timeout=30,
         enqueue_after_commit=True
     )
-    lead.custom_webinar = webinar_doc.name
-    lead.webinar_title = webinar_doc.topic
-    dt = get_datetime(webinar_doc.start_time)
-    lead.custom_webinar_date = getdate(dt)
-    lead.custom_webinar_time = dt.strftime("%H:%M")
-    lead.save(ignore_permissions=True)
-    frappe.db.commit()
+
 
 
 @frappe.whitelist()   
