@@ -1,17 +1,18 @@
 import frappe
 from humain_learning.zoom_autoregistration.api import register_to_webinar,_retry_failed_registration
-
+from frappe.utils import get_datetime, getdate
     
 def register_lead_to_webinar(lead,_):
     if lead.custom_actionable != "Webinar":
         return
     if lead.custom_registered_for_webinar:
         return
-    if not lead.facebook_form_id:
-        return 
-    
-    webinar = frappe.db.get_value("Webinar Mapping", {"form_id": lead.facebook_form_id},"webinar")
-    
+
+    if lead.facebook_form_id:
+        webinar = frappe.db.get_value("Campaign Purpose", {"parent": lead.custom_campaign, "form_id": lead.facebook_form_id }, "webinar")
+    else: 
+        webinar = frappe.db.get_value("Campaign Purpose", {"parent": lead.custom_campaign, "action":lead.custom_actionable}, "webinar")    
+
     if not webinar:
         failure = frappe.get_doc({
             "doctype": "Failed Registration",
@@ -20,20 +21,28 @@ def register_lead_to_webinar(lead,_):
             "http_code": None,
             "error_code": None,
             "facebook_form_id": lead.facebook_form_id,
-            "message": "No webinar mapping found for the lead's Facebook Form ID.",
+            "message": "No webinar found",
             "last_attempt_at": frappe.utils.now_datetime()
         })
         failure.insert(ignore_permissions=True)
+        frappe.db.commit()
         return
+    webinar_doc = frappe.get_doc("Zoom Webinar", webinar)
     frappe.enqueue(
         register_to_webinar,
         lead=lead.name,
-        webinar=webinar,
+        webinar=webinar_doc.name,
         queue="short",
         timeout=30,
         enqueue_after_commit=True
     )
-
+    lead.custom_webinar = webinar_doc.name
+    lead.webinar_title = webinar_doc.topic
+    dt = get_datetime(webinar_doc.start_time)
+    lead.custom_webinar_date = getdate(dt)
+    lead.custom_webinar_time = dt.strftime("%H:%M")
+    lead.save(ignore_permissions=True)
+    frappe.db.commit()
 
 
 @frappe.whitelist()   
