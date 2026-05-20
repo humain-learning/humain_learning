@@ -74,6 +74,7 @@ def fetch_webinar(webinar_id):
     
     
 
+@frappe.whitelist()
 def register_to_webinar(lead,webinar):
     
     lead = frappe.get_doc("CRM Lead", lead)
