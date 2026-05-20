@@ -112,7 +112,7 @@ def register_to_webinar(lead,webinar):
         return
     
     if r.status_code ==201:
-        frappe.db.set_value("CRM Lead", lead.name, "custom_registered_for_webinar", 1)
+        lead.custom_registered_for_webinar = 1
         frappe.get_doc({
 			"doctype": "Webinar Registrant",
 			"parent": webinar.name,
@@ -124,12 +124,10 @@ def register_to_webinar(lead,webinar):
 		}).insert(ignore_permissions=True)
         dt = get_datetime(webinar.start_time)
         time_str = dt.strftime("%-I:%M%p") if dt.minute != 0 else dt.strftime("%-I%p")
-        lead.db_set({
-			"custom_webinar": webinar.name,
-			"custom_webinar_title": webinar.topic,
-			"custom_webinar_date": getdate(dt),
-            "custom_webinar_time": time_str
-		})
+        lead.custom_webinar = webinar.name
+        lead.custom_webinar_time = time_str
+        lead.custom_webinar_date = getdate(webinar.start_time)
+        lead.save()
         return
     
     else:
