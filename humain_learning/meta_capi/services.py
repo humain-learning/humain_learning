@@ -99,7 +99,6 @@ def process_meta_event(event_id, doc, event):
 		event_log.error_message = f"Failed to parse response JSON: {str(e)}"
 		event_log.response_body = {"raw_text": response.text[:1000]}
 		event_log.save(ignore_permissions=True)
-		frappe.db.commit()
 		frappe.logger("meta_capi").error(f"Event {event_id} failed to parse. Status: {response.status_code}, Body: {response.text[:200]}")
 		return
 	
@@ -133,4 +132,3 @@ def process_meta_event(event_id, doc, event):
 		event_log.response_body = {"error":response.text[:1000]}
 
 	event_log.save(ignore_permissions=True)
-	frappe.db.commit()
