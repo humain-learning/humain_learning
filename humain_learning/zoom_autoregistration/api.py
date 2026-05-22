@@ -1,6 +1,6 @@
 from zoneinfo import ZoneInfo
 import frappe
-from frappe.utils import get_datetime,now_datetime,getdate
+from frappe.utils import cint, get_datetime,now_datetime,getdate
 import requests
 from .utils import extract_error
 from datetime import timedelta
@@ -113,11 +113,23 @@ def register_to_webinar(lead,webinar):
     
     if r.status_code ==201:
         lead.custom_registered_for_webinar = 1
+        next_idx = (
+            frappe.db.count(
+                "Webinar Registrant",
+                filters={
+                    "parent": webinar.name,
+                    "parenttype": "Zoom Webinar",
+                    "parentfield": "registrants",
+                },
+            )
+            + 1
+        )
         frappe.get_doc({
 			"doctype": "Webinar Registrant",
 			"parent": webinar.name,
 			"parenttype": "Zoom Webinar",
 			"parentfield": "registrants",
+            "idx": next_idx,
 			"registrant": lead.name,
 			"registered_on": frappe.utils.now_datetime(),
             "join_url": r.json().get("join_url")
@@ -240,6 +252,34 @@ def shorten_url(registrant):
     
 	registrant.db_set("join_url", data.get("shortened_url"))
 	lead.db_set("custom_webinar_join_url", data.get("shortened_url"))
+
+
+@frappe.whitelist()
+def backfill_shorten_urls(webinar):
+
+    pending_registrants = frappe.get_all(
+        "Webinar Registrant",
+        filters=[
+            ["parent", "=", webinar],
+            ["parenttype", "=", "Zoom Webinar"],
+            ["parentfield", "=", "registrants"],
+            ["join_url", "is", "set"],
+            ["join_url", "not like", "https://hlai.in%"],
+        ],
+        fields=["name"],
+        order_by="modified asc",
+    )
+
+    for row in pending_registrants:
+        frappe.enqueue(
+            shorten_url,
+            queue="short",
+            registrant=row.name,
+        )
+
+    return {
+        "queued": len(pending_registrants),
+    }
 
 def _ordinal_suffix(day):
     if 11 <= day % 100 <= 13:

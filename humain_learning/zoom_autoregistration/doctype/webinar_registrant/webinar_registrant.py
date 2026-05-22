@@ -6,7 +6,7 @@ from frappe.model.document import Document
 
 
 class WebinarRegistrant(Document):
-	def after_save(self):
+	def on_update(self):
 		if self.join_url and not self.join_url.startswith("https://hlai.in"):
 			frappe.enqueue(
 				method="humain_learning.zoom_autoregistration.api.shorten_url",
