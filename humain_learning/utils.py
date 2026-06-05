@@ -1,15 +1,18 @@
 from zoneinfo import ZoneInfo
-from frappe.utils import get_datetime, convert_utc_to_system_timezone
+from frappe.utils import get_datetime, convert_utc_to_system_timezone, get_system_timezone
 from frappe.utils import add_to_date, format_date, format_time, getdate
 
-def system_datetime(dt):
+
+ist = ZoneInfo("Asia/Kolkata")
+utc = ZoneInfo("UTC")
+
+def utc_to_sys_dt(dt):
 	return convert_utc_to_system_timezone(get_datetime(dt)).replace(tzinfo=None)
 
 
-def ist_to_utc(dt):
-	ist = ZoneInfo("Asia/Kolkata")
-	utc = ZoneInfo("UTC")
-	return get_datetime(dt).replace(tzinfo=ist).astimezone(utc).isoformat()
+def sys_dt_to_utc(dt):
+    systz = ZoneInfo(get_system_timezone())
+    return get_datetime(dt).replace(tzinfo=systz).astimezone(utc).isoformat()
 
 
 def convert_to_ordinal_timing(start_time, duration):

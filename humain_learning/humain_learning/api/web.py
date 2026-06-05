@@ -18,27 +18,39 @@ def batch_details_of_template(template_id,start_date):
             'start_date': [">",start_date]
         },
         order_by="start_date asc",
-        pluck="name"
+        fields=["*"]
         )
-    if not batches:
-        return "No active batches"
     
     response = []
+    if not batches:
+        return response
     
     for batch in batches:
-        batch_doc = frappe.get_doc("Batch", batch)
         response.append({
-            'name': f'{batch_doc.batch_name} Batch',
-            'start_date': convert_to_ordinal_date(batch_doc.start_date),
-            'limited_seats': batch_doc.limited_seats,
-            'sold_out': batch_doc.sold_out,
+            'id': batch.name,
+            'name': f'{batch.batch_name} Batch',
+            'start_date': convert_to_ordinal_date(batch.start_date),
+            'start_dto_bj': batch.start_date,
+            'limited_seats': batch.limited_seats,
+            'sold_out': batch.sold_out,
             'itinerary': [
                 {
                     'date': convert_to_ordinal_date(row.date),
+                    'date_obj'
                     'day': row.day,
-                    'timing': ("TBD" if row.time_tbd else convert_to_ordinal_timing(row.time, row.duration)) +(" - Graduation" if row.graduation else " - Doubt Clearing" if row.doubt_clearing else "")
+                    'timing': (
+                        "TBD" if row.time_tbd 
+                        else convert_to_ordinal_timing(row.time, row.duration)
+                    ) 
+                    +
+                    (
+                        " - Graduation" if row.graduation 
+                        else " - Doubt Clearing" if row.doubt_clearing 
+                        else " - Orientation" if row.orientation 
+                        else ""
+                    )
                 }
-                for row in batch_doc.itinerary
+                for row in batch.itinerary
             ]
         })
     return response

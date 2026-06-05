@@ -129,9 +129,9 @@ required_apps = ["crm"]
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"WhatsApp Notification": "humain_learning.overrides.whatsapp_notification.CustomWhatsAppNotification"
+}
 
 # Document Events
 # ---------------
@@ -184,7 +184,10 @@ scheduler_events = {
     "cron": {
         "*/30 * * * *": [
             "humain_learning.zoom_autoregistration.oauth.auth.refresh_token"
-        ]
+        ],
+		"0 11 * * *": [
+			"frappe_whatsapp.frappe_whatsapp.doctype.whatsapp_notification.whatsapp_notification.call_trigger_notifications"
+		]
     }
 }
 
@@ -274,3 +277,4 @@ fixtures = [
 # ignore_translatable_strings_from = []
 
 after_install = "humain_learning.setup.install.after_install"
+

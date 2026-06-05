@@ -2,3 +2,4 @@ Humain Learning
 Zoom Autoregistration
 Bolna
 Meta CAPI
+Razorpay Integration
