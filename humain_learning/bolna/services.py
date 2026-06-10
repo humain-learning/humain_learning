@@ -1,7 +1,7 @@
 import frappe
 from .client import get_all_agents, get_all_phones
 from frappe.utils import now_datetime
-from humain_learning.utils import system_datetime
+from humain_learning.utils import utc_to_sys_dt as system_datetime
 
 @frappe.whitelist()
 def sync_bolna_phone():
@@ -142,6 +142,7 @@ def update_bolna_call_record(payload):
 		doc.transcript = payload.get("transcript")
 	if payload.get("extracted_data") is not None:
 		doc.extracted_data = payload.get("extracted_data")
+		doc.summary = payload.get("extracted_data")
 	if payload.get("telephony_data").get("duration") is not None:
 		doc.call_duration = payload.get("telephony_data").get("duration")
 	if payload.get("telephony_data").get("recording_url"):
