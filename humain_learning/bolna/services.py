@@ -141,8 +141,12 @@ def update_bolna_call_record(payload):
 	if payload.get("transcript"):
 		doc.transcript = payload.get("transcript")
 	if payload.get("extracted_data") is not None:
-		doc.extracted_data = payload.get("extracted_data")
-		doc.summary = payload.get("extracted_data")
+		extracted_data = payload.get("extracted_data")
+		doc.extracted_data = extracted_data
+		doc.summary = (
+			(extracted_data.get("General") or {})
+			.get("Call Summary") or {}
+		).get("subjective")
 	if payload.get("telephony_data").get("duration") is not None:
 		doc.call_duration = payload.get("telephony_data").get("duration")
 	if payload.get("telephony_data").get("recording_url"):
