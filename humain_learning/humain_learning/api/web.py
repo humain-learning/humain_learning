@@ -18,14 +18,15 @@ def batch_details_of_template(template_id,start_date):
             'start_date': [">",start_date]
         },
         order_by="start_date asc",
-        fields=["*"]
+        pluck = "name"
         )
     
     response = []
     if not batches:
         return response
     
-    for batch in batches:
+    for batchname in batches:
+        batch = frappe.get_doc("Batch", batchname)
         response.append({
             'id': batch.name,
             'name': f'{batch.batch_name} Batch',
