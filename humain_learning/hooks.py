@@ -156,7 +156,6 @@ doc_events = {
 
 doctype_list_js = {
     "Bolna Agent": "public/js/bolna_agent_list.js",
-    "Bolna Phone": "public/js/bolna_phone_list.js",
     "CRM Lead": "public/js/crm_lead_list.js"
 }
 
