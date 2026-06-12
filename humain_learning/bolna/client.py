@@ -1,7 +1,7 @@
 import requests
 import frappe
 from .utils import build_retry_config
-BOLNA_BASE_URL = "https://api.bolna.ai/"
+BOLNA_BASE_URL = "https://api.bolna.ai"
 ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
 # ALLOWED_BOLNA_SOURCES = []
 

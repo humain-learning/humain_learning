@@ -2,7 +2,7 @@ import requests
 import frappe
 import ipaddress
 import json
-from humain_learning.utils import ist_to_utc
+from humain_learning.utils import sys_dt_to_utc
 from .utils import _client_ip, _ip_allowed
 from .services import update_bolna_call_record, create_bolna_call_for_incoming
 ALLOWED_BOLNA_SOURCES = ["13.203.39.153"]
@@ -51,7 +51,7 @@ def bolna_webhook():
 	
 	last_update = frappe.db.get_value("Bolna Call", execution_id, "last_updated_at")
 
-	if ist_to_utc(last_update) >= payload.get("updated_at"):
+	if sys_dt_to_utc(last_update) >= payload.get("updated_at"):
 		return {"status": "ok", "message": "Received older update. Ignoring."}
 	
 	update_bolna_call_record(payload)
