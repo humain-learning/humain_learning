@@ -6,11 +6,14 @@
  "engine": "InnoDB",
  "field_order": [
   "registrant",
+  "registrant_id",
   "fullname",
   "mobile_no",
   "email",
   "registered_on",
-  "join_url"
+  "join_url",
+  "view_time",
+  "attendee"
  ],
  "fields": [
   {
@@ -50,13 +53,29 @@
    "fieldname": "join_url",
    "fieldtype": "Small Text",
    "label": "Join URL"
+  },
+  {
+   "fieldname": "registrant_id",
+   "fieldtype": "Data",
+   "label": "Registrant ID"
+  },
+  {
+   "fieldname": "view_time",
+   "fieldtype": "Duration",
+   "label": "Total Viewer Time"
+  },
+  {
+   "default": "0",
+   "fieldname": "attendee",
+   "fieldtype": "Check",
+   "label": "Attended Webinar"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-31 10:08:25.550764",
+ "modified": "2026-06-15 21:45:15.511187",
  "modified_by": "Administrator",
  "module": "Zoom Autoregistration",
  "name": "Webinar Registrant",
