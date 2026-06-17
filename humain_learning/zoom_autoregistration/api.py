@@ -335,5 +335,5 @@ def fetch_attendee_list(webinar_id):
 	for r in rows:
 		duration = participants.get(r.registrant_id, {}).get("duration", 0)
 		intent = "Hot" if duration >= 1800 else "Warm" if duration > 900 else "Cold"
-		frappe.db.set_value("Webinar Registrant", r.name, {"attendee": 1, "duration": duration})
+		frappe.db.set_value("Webinar Registrant", r.name, {"attendee": 1, "view_time": duration})
 		frappe.db.set_value("CRM Lead", r.registrant, {"custom_attended_webinar": 1, "custom_intent": intent})

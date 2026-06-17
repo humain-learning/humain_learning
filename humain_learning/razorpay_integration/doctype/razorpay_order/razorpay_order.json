@@ -5,18 +5,43 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "lead_details_tab",
+  "lead",
+  "column_break_jysg",
+  "deal",
+  "billing_details_tab",
+  "billing_first_name",
+  "billing_last_name",
+  "billing_city",
+  "column_break_xrcg",
+  "billing_email",
+  "billing_mobile_no",
+  "product_details_tab",
+  "course",
+  "batch",
+  "seat_count",
+  "payment_details_tab",
   "order_id",
-  "receipt",
   "status",
   "attempts",
+  "created_at",
+  "column_break_pumi",
   "payment_id",
+  "payment_status",
+  "rp_signature",
   "notes",
-  "column_break_eogy",
+  "section_break_gwgy",
+  "subtotal",
+  "discount_amount",
+  "gst_amount",
+  "coupon_code",
+  "column_break_hvmw",
   "amount",
   "amount_due",
   "amount_paid",
   "currency",
-  "rp_signature"
+  "learner_details_tab",
+  "learners"
  ],
  "fields": [
   {
@@ -25,24 +50,16 @@
    "label": "Razorpay Order ID"
   },
   {
-   "fieldname": "receipt",
-   "fieldtype": "Data",
-   "label": "Receipt"
-  },
-  {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
-   "options": "\nCreated\nAttempted\nPaid"
+   "options": "\nCreated\nAttempted\nPaid\nFailed"
   },
   {
    "fieldname": "attempts",
    "fieldtype": "Int",
    "label": "Attempts"
-  },
-  {
-   "fieldname": "column_break_eogy",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "amount",
@@ -78,12 +95,152 @@
    "fieldname": "notes",
    "fieldtype": "JSON",
    "label": "Notes"
+  },
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Lead",
+   "options": "CRM Lead"
+  },
+  {
+   "fieldname": "column_break_jysg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deal",
+   "fieldtype": "Link",
+   "label": "Deal",
+   "options": "CRM Deal"
+  },
+  {
+   "fieldname": "billing_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Billing Details"
+  },
+  {
+   "fieldname": "billing_first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name"
+  },
+  {
+   "fieldname": "billing_last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "billing_email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "billing_mobile_no",
+   "fieldtype": "Data",
+   "label": "Billing Mobile Number"
+  },
+  {
+   "fieldname": "billing_city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "product_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Product Details"
+  },
+  {
+   "fieldname": "column_break_xrcg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "Course",
+   "options": "Template Course"
+  },
+  {
+   "fieldname": "batch",
+   "fieldtype": "Link",
+   "label": "Batch",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "seat_count",
+   "fieldtype": "Int",
+   "label": "No. of Seats"
+  },
+  {
+   "fieldname": "column_break_pumi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_gwgy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "subtotal",
+   "fieldtype": "Currency",
+   "label": "Subtotal"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount"
+  },
+  {
+   "fieldname": "payment_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payment Details"
+  },
+  {
+   "fieldname": "coupon_code",
+   "fieldtype": "Link",
+   "label": "Coupon Code",
+   "options": "Coupon Code"
+  },
+  {
+   "fieldname": "column_break_hvmw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "learner_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Learner Details"
+  },
+  {
+   "fieldname": "lead_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lead Details"
+  },
+  {
+   "description": "Unix Time",
+   "fieldname": "created_at",
+   "fieldtype": "Data",
+   "label": "Created At"
+  },
+  {
+   "fieldname": "learners",
+   "fieldtype": "Table",
+   "label": "Learners",
+   "options": "Learner Details"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "\nPending\nAuthorized\nCaptured\nFailed"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-28 17:32:02.246779",
+ "modified": "2026-06-17 15:30:30.006317",
  "modified_by": "Administrator",
  "module": "Razorpay Integration",
  "name": "Razorpay Order",

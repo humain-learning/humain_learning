@@ -184,7 +184,7 @@ scheduler_events = {
         "*/30 * * * *": [
             "humain_learning.zoom_autoregistration.oauth.auth.refresh_token"
         ],
-		"0 11 * * *": [
+		"0 19 * * *": [
 			"frappe_whatsapp.frappe_whatsapp.doctype.whatsapp_notification.whatsapp_notification.call_trigger_notifications"
 		]
     }
