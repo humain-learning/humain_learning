@@ -295,6 +295,7 @@ def razorpay_webhook():
 		client = razorpay_client()
 		client.utility.verify_webhook_signature(body, signature, frappe.conf.razorpay_webhook_secret)
 		print(f"Razorpay Webhook signature verified successfully")
+		logger.info("Razorpay Webhook signature verified successfully")
 	except SignatureVerificationError:
 		logger.warning("Razorpay Webhook signature verification failed")
 		frappe.response.http_status_code = 400
@@ -302,17 +303,31 @@ def razorpay_webhook():
 
 	request = frappe.request.get_json()
 	payment = request.get("payload").get("payment").get("entity")
-	
+	event = request.get("event")
 	order_doc=frappe.get_doc("Razorpay Order", {"order_id": payment.get("order_id")})
-	
-	order_doc.update({
-		"payment_status": payment.get("status").capitalize() if order_doc.payment_status != "Captured" else order_doc.payment_status,
-		"amount_due": order_doc.amount - (payment.get("amount") / 100),
-		"status": "Paid" if payment.get("status") == "captured" else "Failed" if payment.get("status")=="failed" else order_doc.status,
-	})
+
 	if not order_doc.payment_id:
 		order_doc.payment_id = payment.get("id")
+	
+	if event == "payment.authorized":
+		if order_doc.payment_status != "Captured":
+			order_doc.payment_status = "Authorized"
+			order_doc.status = "Attempted"
+		else:
+			frappe.response.http_status_code = 200
+			frappe.response.message = "Payment Already Captured"
+			return
+	elif event == "payment.captured":
+		order_doc.payment_status = "Captured"
+		order_doc.status = "Paid"
+		order_doc.amount_paid = payment.get('amount')/100
+	elif event == "payment.failed":
+		if order_doc.payment_status != "Captured":
+			order_doc.payment_status = "Failed"
+			order_doc.status = "Failed"
+
 	order_doc.save(ignore_permissions=True)
+	logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 
 	frappe.response.http_status_code = 200
 	frappe.response.message = "Webhook processed successfully"

@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
-
+from frappe.utils import cint
 
 class RazorpayOrder(Document):
 	def on_update(self):
@@ -12,5 +12,5 @@ class RazorpayOrder(Document):
 		if self.has_value_changed("payment_status") and self.payment_status == "Captured":
 			if self.coupon_code:
 				coupon_doc = frappe.get_doc("Coupon Code", self.coupon_code)
-				coupon_doc.use_count += 1
+				coupon_doc.use_count = cint(coupon_doc.use_count) + 1
 				coupon_doc.save()
