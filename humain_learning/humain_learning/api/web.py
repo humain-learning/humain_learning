@@ -133,6 +133,8 @@ def submit_lead():
 	print("received body:", req)
 
 	required_fields = ["first_name", "last_name", "email", "mobile_no"]
+
+	
 	validated = validate_required_fields(required_fields, req)
 	print("validation result:", validated)
 	if validated:
