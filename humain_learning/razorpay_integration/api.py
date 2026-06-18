@@ -48,6 +48,18 @@ def verify_payment():
 			f"Signature verification failed for order {order_doc.name}"
 		)
 		frappe.response.http_status_code = 400
+		frappe.sendmail(
+			recipients=["raghav.kaul@humainlearning.ai"],
+			subject=f"Razorpay Verification Failure - {order_doc.name}",
+			message=f"""
+			Order: {order_doc.name}<br>
+			Razorpay Order ID: {data['razorpay_order_id']}<br>
+			Razorpay Payment ID: {data['razorpay_payment_id']}<br>
+			Stored Order ID: {order_doc.order_id}<br>
+			Timestamp: {now_datetime()}<br>
+			""",
+			now=True,
+		)
 		return {
 			"error": "Invalid payment signature"
 		}
