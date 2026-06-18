@@ -186,6 +186,9 @@ scheduler_events = {
         ],
 		"0 19 * * *": [
 			"frappe_whatsapp.frappe_whatsapp.doctype.whatsapp_notification.whatsapp_notification.call_trigger_notifications"
+		],
+		"*/5 * * * *": [
+			"humain_learning.overrides.whatsapp_notification.send_webinar_reminders"
 		]
     }
 }
