@@ -74,10 +74,8 @@ def verify_payment():
 	
 	order_doc.update({
 		"payment_id": data["razorpay_payment_id"],
-		"status": "Attempted" if order_doc.status != "Paid" else order_doc.status,
 		"attempts": order_doc.attempts + 1,
 		"rp_signature": data["razorpay_signature"],
-		"payment_id": data["razorpay_payment_id"],
 	})
 
 	order_doc.save()
