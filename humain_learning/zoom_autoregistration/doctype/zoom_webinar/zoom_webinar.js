@@ -29,10 +29,20 @@ frappe.ui.form.on("Zoom Webinar", {
         });
 		frm.add_custom_button("Fetch Webinar Attendance", () => {
 			frappe.call({
-                method: "humain_learning.zoom_autoregistration.api.queue_attendee_fetch",
+                method: "humain_learning.zoom_autoregistration.api.queue_attendance_fetch",
                 args: {
-                    webinar_id: frm.doc.name,
+                    webinar: frm.doc.name,
                 },
+				callback(r) {
+                    if (r.exc) {
+                        return;
+                    }
+
+                    frappe.show_alert({
+                        message: __("Fetch Started"),
+                        indicator: "green",
+                    });
+                }
 			})
 		})
     },
