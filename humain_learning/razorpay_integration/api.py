@@ -6,7 +6,7 @@ from humain_learning.utils import validate_required_fields
 from werkzeug.exceptions import MethodNotAllowed
 
 frappe.utils.logger.set_log_level("DEBUG")
-logger = frappe.logger("razorpay", with_more_info=True, allow_site=True, file_count=50)
+logger = frappe.logger("razorpay", with_more_info=True, allow_site=True, file_count=50, max_size=10485760)  # 10MB
 
 
 def razorpay_client():
@@ -355,12 +355,16 @@ def razorpay_webhook():
 				order_doc.payment_status = "Failed"
 				order_doc.status = "Failed"
 				logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
-
+		logger.info(f"Saving Order Document {order_doc.name} with payment status {order_doc.payment_status}")
 		order_doc.save(ignore_permissions=True)
+		logger.info(f"Saved Order Document {order_doc.name} with payment status {order_doc.payment_status}")
+
 		frappe.db.commit()
+		logger.info(f"Comitting to DB Order Document {order_doc.name} with payment status {order_doc.payment_status}")
+
 		fresh = frappe.get_doc("Razorpay Order", order_doc.name)
-		logger.info("Order Status: ",fresh.status, "Payment Status: ", fresh.payment_status)
-		# logger.info(f"FINALLY Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
+		logger.info(f"Order Status: {fresh.status}, Payment Status: {fresh.payment_status}")
+		logger.info(f"FINALLY Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 		frappe.response.http_status_code = 200
 		frappe.response.message = "Webhook processed successfully"
 		return
