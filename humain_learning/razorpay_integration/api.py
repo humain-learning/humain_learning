@@ -265,9 +265,6 @@ def create_order():
 
 			logger.info(f"Created Razorpay Order document {order_doc.name} for deal {order_doc.deal} with amount {order_doc.amount}")
 
-
-
-			
 			try:
 				rpclient = razorpay_client()
 				order = rpclient.order.create({
@@ -314,38 +311,57 @@ def razorpay_webhook():
 	request = frappe.request.get_json()
 	payment = request.get("payload").get("payment").get("entity")
 	event = request.get("event")
-	order_doc=frappe.get_doc("Razorpay Order", {"order_id": payment.get("order_id")})
-	logger.info(f"Processing Razorpay Webhook for Order {order_doc.name} with event {event} and payment ID {payment.get('id')}")
-	if not order_doc.payment_id:
-		order_doc.payment_id = payment.get("id")
-	
-	if event == "payment.authorized":
-		if order_doc.payment_status != "Captured":
-			order_doc.payment_status = "Authorized"
-			order_doc.status = "Attempted"
-			logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
-		else:
-			frappe.response.http_status_code = 200
-			frappe.response.message = "Payment Already Captured"
-			logger.info(f"Payment already captured for Order {order_doc.name}. No update performed.")
-			return
-	elif event == "payment.captured":
-		order_doc.payment_status = "Captured"
-		order_doc.status = "Paid"
-		order_doc.amount_paid = payment.get('amount')/100
-		logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount paid {order_doc.amount_paid}, and overall status {order_doc.status}")
-	elif event == "payment.failed":
-		if order_doc.payment_status != "Captured":
-			order_doc.payment_status = "Failed"
-			order_doc.status = "Failed"
-			logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
+	lock_key = f"lock:{payment.get('order_id')}"
+	logger.info(
+		f"Acquiring lock {lock_key}"
+	)
+	with frappe.cache.lock(lock_key, timeout=5):
+		logger.info(
+			f"Acquired lock {lock_key}"
+		)
+		order_doc=frappe.get_doc("Razorpay Order", {"order_id": payment.get("order_id")})
+		logger.info(f"Processing Razorpay Webhook for Order {order_doc.name} with event {event} and payment ID {payment.get('id')}")
 
-	order_doc.save(ignore_permissions=True)
-	logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
+		if not order_doc.payment_id:
+			order_doc.payment_id = payment.get("id")
+		
+		if event == "payment.authorized":
+			if order_doc.payment_status == "Captured":
+				frappe.response.http_status_code = 200
+				frappe.response.message = "Payment Already Captured"
+				logger.info(f"Payment already captured for Order {order_doc.name}. No update performed.")
+				return
+			else:
+				order_doc.payment_status = "Authorized"
+				order_doc.status = "Attempted"
+				logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
+		elif event == "payment.captured":
+			if order_doc.payment_status == "Captured":
+				frappe.response.http_status_code = 200
+				frappe.response.message = "Payment Already Captured"
+				logger.info(f"Payment already captured for Order {order_doc.name}. No update performed.")
+				return
+			order_doc.payment_status = "Captured"
+			order_doc.status = "Paid"
+			order_doc.amount_paid = payment.get('amount')/100
+			logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount paid {order_doc.amount_paid}, and overall status {order_doc.status}")
+		elif event == "payment.failed":
+			if order_doc.payment_status == "Captured":
+				frappe.response.http_status_code = 200
+				frappe.response.message = "Payment Already Captured"
+				logger.info(f"Payment already captured for Order {order_doc.name}. No update performed.")
+				return
+			else:
+				order_doc.payment_status = "Failed"
+				order_doc.status = "Failed"
+				logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 
-	frappe.response.http_status_code = 200
-	frappe.response.message = "Webhook processed successfully"
-	return
+		order_doc.save(ignore_permissions=True)
+		logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
+		frappe.db.commit()
+		frappe.response.http_status_code = 200
+		frappe.response.message = "Webhook processed successfully"
+		return
 
 def validate_checkout_payload(payload):
 	required_fields = [
