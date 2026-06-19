@@ -286,6 +286,9 @@ def latest_webinar_details(template_id):
 
 
 def fetch_attendee_list(webinar_id):
+	already_processed = frappe.db.get_value("Zoom Webinar", webinar_id, "attendance_processed")
+	if already_processed:
+		return
 	webinar = frappe.get_doc("Zoom Webinar", webinar_id)
 	webinar_id = webinar.webinar_id.replace(" ", "")
 	url = f"{ZOOM_BASE_URL}/past_webinars/{webinar_id}/participants"
@@ -337,3 +340,6 @@ def fetch_attendee_list(webinar_id):
 		intent = "Hot" if duration >= 1800 else "Warm" if duration > 900 else "Cold"
 		frappe.db.set_value("Webinar Registrant", r.name, {"attendee": 1, "view_time": duration})
 		frappe.db.set_value("CRM Lead", r.registrant, {"custom_attended_webinar": 1, "custom_intent": intent})
+	webinar.attendance_processed = 1
+	webinar.save()
+	return

@@ -315,7 +315,7 @@ def razorpay_webhook():
 	logger.info(
 		f"Acquiring lock {lock_key}"
 	)
-	with frappe.cache.lock(lock_key, timeout=5):
+	with frappe.cache.lock(lock_key, timeout=60):
 		logger.info(
 			f"Acquired lock {lock_key}"
 		)
@@ -357,8 +357,8 @@ def razorpay_webhook():
 				logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 
 		order_doc.save(ignore_permissions=True)
-		logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 		frappe.db.commit()
+		logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 		frappe.response.http_status_code = 200
 		frappe.response.message = "Webhook processed successfully"
 		return

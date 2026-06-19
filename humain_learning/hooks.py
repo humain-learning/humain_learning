@@ -190,7 +190,10 @@ scheduler_events = {
 		"*/5 * * * *": [
 			"humain_learning.overrides.whatsapp_notification.send_webinar_reminders"
 		]
-    }
+    },
+	"hourly": [
+		"humain_learning.humain_learning.zoom_autoregistration.scheduled_jobs.get_webinars_for_attendance"
+	]
 }
 
 fixtures = [
