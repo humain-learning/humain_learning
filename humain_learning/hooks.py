@@ -192,7 +192,7 @@ scheduler_events = {
 		]
     },
 	"hourly": [
-		"humain_learning.humain_learning.zoom_autoregistration.scheduled_jobs.get_webinars_for_attendance"
+		"humain_learning.zoom_autoregistration.scheduled_jobs.get_webinars_for_attendance"
 	]
 }
 

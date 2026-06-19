@@ -11,5 +11,5 @@ def get_webinars_for_attendance():
 
 	for webinar in webinars:
 		frappe.enqueue(
-			"humain_learning.humain_learning.zoom_autoregistration.webinar_attendance", webinar=webinar
+			"humain_learning.zoom_autoregistration.webinar_attendance", webinar=webinar
 			)
