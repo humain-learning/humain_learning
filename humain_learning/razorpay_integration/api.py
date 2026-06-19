@@ -356,9 +356,11 @@ def razorpay_webhook():
 				order_doc.status = "Failed"
 				logger.info(f"Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 
-			order_doc.save(ignore_permissions=True)
-			frappe.db.commit()
-		logger.info(f"FINALLY Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
+		order_doc.save(ignore_permissions=True)
+		frappe.db.commit()
+		fresh = frappe.get_doc("Razorpay Order", order_doc.name)
+		logger.info("Order Status: ",fresh.status, "Payment Status: ", fresh.payment_status)
+		# logger.info(f"FINALLY Updated Order document {order_doc.name} with payment status {order_doc.payment_status}, amount due {order_doc.amount_due}, and overall status {order_doc.status}")
 		frappe.response.http_status_code = 200
 		frappe.response.message = "Webhook processed successfully"
 		return
