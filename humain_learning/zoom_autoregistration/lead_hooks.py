@@ -38,7 +38,6 @@ def register_lead_to_webinar(lead,_):
     )
 
 
-
 @frappe.whitelist()   
 def retry_failed_registration(lead,webinar):
     frappe.enqueue(

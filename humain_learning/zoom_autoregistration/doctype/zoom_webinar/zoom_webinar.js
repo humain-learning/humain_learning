@@ -27,6 +27,14 @@ frappe.ui.form.on("Zoom Webinar", {
                 }
             });
         });
+		frm.add_custom_button("Fetch Webinar Attendance", () => {
+			frappe.call({
+                method: "humain_learning.zoom_autoregistration.api.queue_attendee_fetch",
+                args: {
+                    webinar_id: frm.doc.name,
+                },
+			})
+		})
     },
 
     fetch_webinar_details(frm) {

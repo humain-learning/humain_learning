@@ -343,3 +343,14 @@ def fetch_attendee_list(webinar_id):
 	webinar.attendance_processed = 1
 	webinar.save()
 	return
+
+@frappe.whitelist()
+def queue_attendance_fetch(webinar):
+    frappe.enqueue(
+        fetch_attendee_list,
+        queue="long",
+        webinar_id=webinar,
+        timeout=1500,
+    )
+
+    return {"queued": True}
