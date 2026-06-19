@@ -8,6 +8,11 @@ from humain_learning.utils import utc_to_sys_dt, sys_dt_to_utc
 import sys
 ZOOM_BASE_URL = "https://api.zoom.us/v2"
 
+frappe.utils.logger.set_log_level("DEBUG")
+logger = frappe.logger("zoom", with_more_info=True, allow_site=True, file_count=50, max_size=10485760)  # 10MB
+
+
+
 @frappe.whitelist()
 def fetch_webinar(webinar_id):
 
@@ -288,9 +293,11 @@ def latest_webinar_details(template_id):
 def fetch_attendee_list(webinar_id):
 	already_processed = frappe.db.get_value("Zoom Webinar", webinar_id, "attendance_processed")
 	if already_processed:
+		logger.info(f"Attendance for webinar {webinar_id} has already been processed.")
 		return
+	
 	webinar = frappe.get_doc("Zoom Webinar", webinar_id)
-	webinar_id = webinar.webinar_id.replace(" ", "")
+	webinar_id = webinar.name.replace(" ", "")
 	url = f"{ZOOM_BASE_URL}/past_webinars/{webinar_id}/participants"
 	token_doc = frappe.get_single("Zoom OAuth Token")
 	headers = {
@@ -306,16 +313,15 @@ def fetch_attendee_list(webinar_id):
 		
 		response = requests.get(url, headers=headers, params=params, timeout=30)
 
-		
 		if response.status_code != 200:
-			frappe.log_error(f"Failed to fetch attendees: {response.text}")
+			logger.error(f"Failed to fetch attendees: {response.text}")
 			break
 
 		data = response.json()
 		ps = data.get("participants")
 		for p in ps:
 			rid = p["registrant_id"]
-			if rid not in participants:
+			if rid not in participants.keys():
 				participants[rid] = {
 					"duration": p.get("duration", 0), 
 				}
@@ -325,7 +331,7 @@ def fetch_attendee_list(webinar_id):
 		next_page_token = data.get("next_page_token")
 		if not next_page_token:
 			break
-	
+	logger.info(f"Fetched {len(participants)} unique participants for webinar {webinar_id}.")
 	if not participants:
 		return
 
@@ -334,15 +340,19 @@ def fetch_attendee_list(webinar_id):
 		filters={"parent": webinar.name, "parenttype": "Zoom Webinar", "parentfield": "registrants", "registrant_id": ["in", list(participants.keys())]},
 		fields=["name", "registrant_id", "registrant"],
 	)
-
+	logger.info(f"Found {len(rows)} matching registrants in ERP for webinar {webinar_id}.")
 	for r in rows:
 		duration = participants.get(r.registrant_id, {}).get("duration", 0)
 		intent = "Hot" if duration >= 1800 else "Warm" if duration > 900 else "Cold"
 		frappe.db.set_value("Webinar Registrant", r.name, {"attendee": 1, "view_time": duration})
+		logger.info(f"Updated registrant {r.name} with duration {duration}.")
 		frappe.db.set_value("CRM Lead", r.registrant, {"custom_attended_webinar": 1, "custom_intent": intent})
+		logger.info(f"Updated lead {r.registrant} with attended_webinar=1 and intent={intent}.")
 	webinar.attendance_processed = 1
 	webinar.save()
+	logger.info(f"Marked webinar {webinar_id} attendance as processed.")
 	return
+
 
 @frappe.whitelist()
 def queue_attendance_fetch(webinar):
