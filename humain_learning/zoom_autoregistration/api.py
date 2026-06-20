@@ -146,6 +146,7 @@ def register_to_webinar(lead,webinar):
 		lead.custom_webinar = webinar.name
 		lead.custom_webinar_time = time_str
 		lead.custom_webinar_date = getdate(webinar.start_time)
+		lead.custom_webinar_start_time = webinar.start_time
 		lead.save()
 		return
 	
