@@ -59,11 +59,13 @@ def retry_bolna_lifecycle_bulk(leads):
 			lead = frappe.get_doc("CRM Lead", lead_name)
 			execution_id = call_via_agent(lead, None,retry=True)
 			if execution_id:
+				frappe.db.commit()
 				result["succeeded"] += 1
 			else:
 				result["failedinside"] += 1
 				result["failed_leads"].append(lead_name)
 		except Exception:
+			frappe.db.rollback()
 			frappe.log_error(frappe.get_traceback(), f"Bolna bulk retry failed for {lead_name}")
 			result["failed"] += 1
 			result["failed_leads"].append(lead_name)

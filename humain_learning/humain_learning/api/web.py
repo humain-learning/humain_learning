@@ -6,6 +6,9 @@ from frappe.utils import get_datetime
 from werkzeug.exceptions import MethodNotAllowed
 from humain_learning.utils import validate_required_fields
 
+logger = frappe.logger("humain_learning")
+
+
 @frappe.whitelist()
 def batch_details_of_template(template_id,start_date):
 	if frappe.request.method != "GET":
@@ -129,28 +132,29 @@ def current_active_discount(template_id):
 def submit_lead():
 	if frappe.request.method != "POST":
 		raise MethodNotAllowed(valid_methods=["POST"])
+	
+
 	req = frappe.request.get_json()
-	print("received body:", req)
+	logger.info(f"Received lead submission request: {req}")
 
 	required_fields = ["first_name", "last_name", "email", "mobile_no"]
+	validate_required_fields(required_fields, req)
 
+	exists = frappe.db.exists("CRM Lead", {"email": req["email"]}):
+
+	lead = frappe.get_doc({
+		"doctype": "CRM Lead",
+		**req
+	})
+
+	lead.insert(ignore_permissions=True)
+	lead.reload()
+	print(lead)
 	
-	validated = validate_required_fields(required_fields, req)
-	print("validation result:", validated)
-	if validated:
-		lead = frappe.get_doc({
-			"doctype": "CRM Lead",
-			**req
-		})
-
-		lead.insert(ignore_permissions=True)
-		lead.reload()
-		print(lead)
-		
-		frappe.response.http_status_code = 200
-		return {
-			"leadId": lead.name,   
-		}
+	frappe.response.http_status_code = 200
+	return {
+		"leadId": lead.name,   
+	}
 		
 
 @frappe.whitelist()
