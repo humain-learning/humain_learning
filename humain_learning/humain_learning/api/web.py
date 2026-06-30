@@ -138,18 +138,25 @@ def submit_lead():
 	logger.info(f"Received lead submission request: {req}")
 
 	required_fields = ["first_name", "last_name", "email", "mobile_no"]
+
 	validate_required_fields(required_fields, req)
+	print(req['email'])
+	exists = frappe.db.exists("CRM Lead", {"email": req["email"]})
 
-	exists = frappe.db.exists("CRM Lead", {"email": req["email"]}):
+	if exists:
+		lead = frappe.get_doc("CRM Lead", exists)
+		lead.update({
+			**req
+		})
+		lead.save(ignore_permissions=True)
+	else:
+		lead = frappe.get_doc({
+			"doctype": "CRM Lead",
+			**req
+		})
+		lead.insert(ignore_permissions=True)
 
-	lead = frappe.get_doc({
-		"doctype": "CRM Lead",
-		**req
-	})
-
-	lead.insert(ignore_permissions=True)
 	lead.reload()
-	print(lead)
 	
 	frappe.response.http_status_code = 200
 	return {

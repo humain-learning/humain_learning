@@ -1,4 +1,5 @@
 import frappe
+from .notifications.crm_lead import new_hot_lead
 
 def assign_campaign(lead,_):
     if lead.facebook_form_id:
@@ -21,6 +22,11 @@ def assign_campaign(lead,_):
             }).insert(ignore_permissions=True, ignore_if_duplicate=True)
             
             lead.custom_campaign = campaign_name
+    else:
+        lead.custom_campaign = 'Organic'
+        if not lead.source:
+            lead.source = 'Website'
+            
     
 
 def standardize_mobile(doc, _):
@@ -38,3 +44,6 @@ def standardize_mobile(doc, _):
     else:
         return
     
+def send_notifications(lead, _):
+    print("Checking for new hot lead:", lead.name)
+    new_hot_lead(lead, _)

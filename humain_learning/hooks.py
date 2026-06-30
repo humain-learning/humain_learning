@@ -146,7 +146,8 @@ doc_events = {
         "after_insert": "humain_learning.bolna.lead_hooks.call_via_agent",
 		"on_update": [
 			"humain_learning.zoom_autoregistration.lead_hooks.register_lead_to_webinar",
-			"humain_learning.meta_capi.hooks.handle_meta_capi_event"		
+			"humain_learning.meta_capi.hooks.handle_meta_capi_event",
+			"humain_learning.humain_learning.lead_controller.send_notifications"
 		]
     },
 	"CRM Deal": {

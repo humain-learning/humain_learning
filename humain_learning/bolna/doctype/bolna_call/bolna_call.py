@@ -16,3 +16,4 @@ class BolnaCall(Document):
 
 		if self.has_value_changed("summary") and self.summary:
 			add_comment_to_lead(self)
+

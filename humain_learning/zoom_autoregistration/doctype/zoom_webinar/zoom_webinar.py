@@ -23,3 +23,6 @@ class ZoomWebinar(Document):
 			self.end_time = details.get("end_time")
 			self.host_email = details.get("host_email")
 			self.created_at = details.get("created_at")
+
+
+		
