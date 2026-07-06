@@ -100,7 +100,7 @@ def update_lead_status(call_doc):
 	if call_doc.status == "completed":
 		lead.status = "Contacted"
 	elif call_doc.retry_count == frappe.db.get_single_value("Bolna Retry Config", "max_retries"):
-		lead.status = "DNP"
+		lead.status = "Bolna DNP"
 	lead.save(ignore_permissions=True)
 
 def add_comment_to_lead(call_doc):

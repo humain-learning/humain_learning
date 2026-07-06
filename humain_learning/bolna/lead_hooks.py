@@ -2,7 +2,7 @@ import frappe
 from .client import trigger_call
 from frappe.utils import now_datetime
 
-def call_via_agent(lead,method,retry=True):
+def call_via_agent(lead,_,retry=True):
 	if not lead.custom_campaign:
 		return None
 	campaign = frappe.get_doc("Marketing Campaign",lead.custom_campaign)
@@ -57,15 +57,13 @@ def retry_bolna_lifecycle_bulk(leads):
 	for lead_name in leads:
 		try:
 			lead = frappe.get_doc("CRM Lead", lead_name)
-			execution_id = call_via_agent(lead, None,retry=True)
+			execution_id = call_via_agent(lead, None, retry=True)
 			if execution_id:
-				frappe.db.commit()
 				result["succeeded"] += 1
 			else:
 				result["failedinside"] += 1
 				result["failed_leads"].append(lead_name)
 		except Exception:
-			frappe.db.rollback()
 			frappe.log_error(frappe.get_traceback(), f"Bolna bulk retry failed for {lead_name}")
 			result["failed"] += 1
 			result["failed_leads"].append(lead_name)
