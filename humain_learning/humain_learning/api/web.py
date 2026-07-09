@@ -5,6 +5,7 @@ from ...utils import *
 from frappe.utils import get_datetime
 from werkzeug.exceptions import MethodNotAllowed
 from humain_learning.utils import validate_required_fields
+from humain_learning.humain_learning.lead_controller import assign_campaign
 
 logger = frappe.logger("humain_learning")
 
@@ -145,14 +146,15 @@ def submit_lead():
 
 	if exists:
 		lead = frappe.get_doc("CRM Lead", exists)
-		lead.update({
-			**req
-		})
+		lead.update(req)
+		assign_campaign(lead, None)
+		if lead.custom_actionable == "Webinar":
+			lead.custom_registered_for_webinar = 0
 		lead.save(ignore_permissions=True)
 	else:
 		lead = frappe.get_doc({
 			"doctype": "CRM Lead",
-			**req
+			**req,
 		})
 		lead.insert(ignore_permissions=True)
 
@@ -162,7 +164,7 @@ def submit_lead():
 	return {
 		"leadId": lead.name,   
 	}
-		
+
 
 @frappe.whitelist()
 def validate_coupon(coupon_code, course_id):

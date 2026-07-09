@@ -231,16 +231,17 @@
    "options": "Learner Details"
   },
   {
+   "default": "None",
    "fieldname": "payment_status",
    "fieldtype": "Select",
    "label": "Payment Status",
-   "options": "\nPending\nAuthorized\nCaptured\nFailed"
+   "options": "None\nPending\nAuthorized\nCaptured\nFailed"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-17 15:30:30.006317",
+ "modified": "2026-07-04 16:18:45.496822",
  "modified_by": "Administrator",
  "module": "Razorpay Integration",
  "name": "Razorpay Order",

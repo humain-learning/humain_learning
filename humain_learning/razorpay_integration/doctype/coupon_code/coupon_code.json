@@ -5,9 +5,11 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "active",
   "max_uses",
   "use_count",
-  "active",
+  "expiry_timer",
+  "expires_at",
   "column_break_bxcv",
   "course",
   "type",
@@ -76,12 +78,24 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Active"
+  },
+  {
+   "depends_on": "eval:doc.expiry_timer===1;",
+   "fieldname": "expires_at",
+   "fieldtype": "Datetime",
+   "label": "Expires At"
+  },
+  {
+   "default": "0",
+   "fieldname": "expiry_timer",
+   "fieldtype": "Check",
+   "label": "Expiry Timer"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-17 15:00:47.844132",
+ "modified": "2026-07-02 16:20:22.457260",
  "modified_by": "Administrator",
  "module": "Razorpay Integration",
  "name": "Coupon Code",
