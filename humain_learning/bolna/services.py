@@ -1,6 +1,6 @@
 import frappe
 from .client import get_all_agents, get_all_phones
-from frappe.utils import now_datetime
+from frappe.utils import now_datetime, cint
 from humain_learning.utils import utc_to_sys_dt as system_datetime
 
 @frappe.whitelist()
@@ -97,9 +97,16 @@ def extractions_to_dict(extracted_data, agent):
 def update_lead_status(call_doc):
 	lead = frappe.get_doc("CRM Lead", call_doc.lead)
 	lead.custom_bolna_call_status = call_doc.status
+	retry_config = frappe.get_single("Bolna Retry Config")
 	if call_doc.status == "completed":
 		lead.status = "Contacted"
-	elif call_doc.retry_count == frappe.db.get_single_value("Bolna Retry Config", "max_retries"):
+	elif (
+		call_doc.status in retry_config.get_retry_statuses()
+		and cint(call_doc.retry_count) >= cint(retry_config.max_retries)
+	):
+		# Only mark as DNP once the final allowed attempt has itself
+		# ended in a retryable (unanswered/failed) status, i.e. no
+		# further retries will be scheduled by Bolna.
 		lead.status = "Bolna DNP"
 	lead.save(ignore_permissions=True)
 

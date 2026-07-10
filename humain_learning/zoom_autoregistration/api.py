@@ -1,16 +1,14 @@
-from zoneinfo import ZoneInfo
 import frappe
 from frappe.utils import cint, get_datetime,now_datetime,getdate
 import requests
 from .utils import extract_error
 from datetime import timedelta
 from humain_learning.utils import utc_to_sys_dt, sys_dt_to_utc
-import sys
 ZOOM_BASE_URL = "https://api.zoom.us/v2"
 
-frappe.utils.logger.set_log_level("DEBUG")
-logger = frappe.logger("zoom", with_more_info=True, allow_site=True, file_count=50, max_size=10485760)  # 10MB
 
+logger = frappe.logger("zoom", with_more_info=True, allow_site=True, file_count=50, max_size=10485760)  # 10MB
+frappe.utils.logger.set_log_level("DEBUG")
 
 
 @frappe.whitelist()
@@ -20,6 +18,7 @@ def fetch_webinar(webinar_id):
 		frappe.throw("Please provide a Webinar ID.")
 
 	webinar_id = webinar_id.replace(" ", "")
+	logger.info(f"Fetching webinar details for webinar_id={webinar_id}")
 	token_doc = frappe.get_single("Zoom OAuth Token")
 
 	url = f"{ZOOM_BASE_URL}/webinars/{webinar_id}"
@@ -31,6 +30,7 @@ def fetch_webinar(webinar_id):
 	try:
 		response = requests.get(url, headers=headers, timeout=10)
 	except requests.exceptions.RequestException as e:
+		logger.error(f"Request failed while fetching webinar {webinar_id}: {e}")
 		frappe.throw(str(e))
 
 	# Attempt JSON parse safely
@@ -67,7 +67,9 @@ def fetch_webinar(webinar_id):
 	start_time = utc_to_sys_dt(data.get("start_time"))
 
 	created_at = utc_to_sys_dt(data.get("created_at"))
-	 
+
+	logger.info(f"Successfully fetched webinar {webinar_id}")
+
 	return {
 		"topic": data.get("topic"),
 		"start_time": start_time,
@@ -99,10 +101,14 @@ def register_to_webinar(lead,webinar):
 		"last_name": lead.last_name if lead.last_name else "",
 		"phone": lead.mobile_no,
 	}
+
+	logger.info(f"Registering lead {lead.name} to webinar {webinar.name}")
+
 	try:
 		r = requests.post(url, json=payload, headers=headers, timeout=30)
-		
+		logger.info(f"Received response {r.json()}")
 	except requests.exceptions.RequestException as e:
+		logger.error(f"Request failed while registering lead {lead.name} to webinar {webinar.name}: {e}")
 		failed = frappe.get_doc({
 			"doctype": "Failed Registration",
 			"lead": lead.name,
@@ -148,10 +154,12 @@ def register_to_webinar(lead,webinar):
 		lead.custom_webinar_date = getdate(webinar.start_time)
 		lead.custom_webinar_start_time = webinar.start_time
 		lead.save()
+		logger.info(f"Successfully registered lead {lead.name} to webinar {webinar.name}")
 		return
 	
 	else:
 		status_code, err_code, err_msg = extract_error(r)
+		logger.error(f"Failed to register lead {lead.name} to webinar {webinar.name}: {status_code} {err_msg}")
 		failed = frappe.get_doc({
 			"doctype": "Failed Registration",
 			"lead": lead.name,
@@ -189,10 +197,13 @@ def _retry_failed_registration(lead,webinar):
 		"phone": lead.mobile_no,
 	}
 	
+	logger.info(f"Retrying failed registration for lead {lead.name} to webinar {webinar.name}")
+
 	try:
 		r = requests.post(url, json=payload, headers=headers, timeout=30)
 		
 	except requests.exceptions.RequestException as e:
+		logger.error(f"Retry failed for lead {lead.name} to webinar {webinar.name}: {e}")
 		frappe.db.set_value(
 			"Failed Registration",
 			{"lead": lead.name, "webinar": webinar.name},
@@ -207,12 +218,14 @@ def _retry_failed_registration(lead,webinar):
 		return
 		
 	if r.status_code ==201:
+		logger.info(f"Retry succeeded for lead {lead.name} to webinar {webinar.name}")
 		frappe.db.set_value("CRM Lead", lead.name, "custom_registered_for_webinar", 1)
 		frappe.db.delete("Failed Registration", {"lead": lead.name, "webinar": webinar.name})
 		
 		return
 	else:
 		status_code, err_code, err_msg = extract_error(r)
+		logger.error(f"Retry failed for lead {lead.name} to webinar {webinar.name}: {status_code} {err_msg}")
 		frappe.db.set_value(
 			"Failed Registration",
 			{"lead": lead.name, "webinar": webinar.name},
@@ -253,6 +266,7 @@ def shorten_url(registrant):
 	
 	response = requests.post(base_url, data=payload, headers=headers, timeout=30)
 	if response.status_code != 200:
+		logger.error(f"URL Shortening failed for registrant {registrant.name}: {response.text}")
 		frappe.log_error(f"URL Shortening failed")
 		return
 	
@@ -260,6 +274,7 @@ def shorten_url(registrant):
 	
 	registrant.db_set("join_url", data.get("shortened_url"))
 	lead.db_set("custom_webinar_join_url", data.get("shortened_url"))
+	logger.info(f"Shortened URL for registrant {registrant.name}")
 
 
 def _ordinal_suffix(day):
@@ -279,6 +294,7 @@ def latest_webinar_details(template_id):
 	)
 
 	if not webinars:
+		logger.info(f"No upcoming webinars found for template_id={template_id}")
 		frappe.response.http_status_code = 404
 		frappe.response.message = "No upcoming webinars found."
 		return
@@ -357,6 +373,7 @@ def fetch_attendee_list(webinar_id):
 
 @frappe.whitelist()
 def queue_attendance_fetch(webinar):
+    logger.info(f"Queueing attendance fetch for webinar {webinar}")
     frappe.enqueue(
         fetch_attendee_list,
         queue="long",
