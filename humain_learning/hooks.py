@@ -197,6 +197,9 @@ scheduler_events = {
 	],
 	"all" : [
 		"humain_learning.razorpay_integration.doctype.coupon_code.coupon_expired"
+	],
+	"weekly": [
+		"humain_learning.humain_learning.scheduled_jobs.create_edmingle_api_key"
 	]
 }
 
@@ -286,4 +289,5 @@ fixtures = [
 # ignore_translatable_strings_from = []
 
 after_install = "humain_learning.setup.install.after_install"
+after_migrate = "humain_learning.setup.install.after_migrate"
 

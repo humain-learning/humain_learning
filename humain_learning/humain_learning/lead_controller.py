@@ -1,5 +1,6 @@
 import frappe
 from .notifications.crm_lead import new_hot_lead
+from ..setup.install import ensure_default_marketing_campaigns
 
 def assign_campaign(lead,_):
     
@@ -24,6 +25,7 @@ def assign_campaign(lead,_):
         else: 
             return
     else:
+        ensure_default_marketing_campaigns()
         lead.custom_campaign = 'Organic'
         if not lead.source:
             lead.source = 'Website'
