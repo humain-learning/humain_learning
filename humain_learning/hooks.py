@@ -195,12 +195,12 @@ scheduler_events = {
 	"hourly": [
 		"humain_learning.zoom_autoregistration.scheduled_jobs.get_webinars_for_attendance"
 	],
-	"all" : [
-		"humain_learning.razorpay_integration.doctype.coupon_code.coupon_expired"
-	],
-	"weekly": [
-		"humain_learning.humain_learning.scheduled_jobs.create_edmingle_api_key"
-	]
+	# "all" : [
+	# 	"humain_learning.razorpay_integration.doctype.coupon_code.coupon_expired"
+	# ],
+	# "weekly": [
+	# 	"humain_learning.humain_learning.scheduled_jobs.create_edmingle_api_key"
+	# ]
 }
 
 fixtures = [
