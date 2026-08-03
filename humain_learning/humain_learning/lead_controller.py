@@ -3,8 +3,9 @@ from .notifications.crm_lead import new_hot_lead
 from ..setup.install import ensure_default_marketing_campaigns
 
 def assign_campaign(lead,_):
+    utm_campaign = lead.get("custom_utm_campaign")
     
-    if lead.custom_utm_campaign:
+    if utm_campaign:
         campaign_name = lead.custom_utm_campaign.strip()
 
         if frappe.db.exists("Marketing Campaign", campaign_name):
