@@ -94,6 +94,7 @@ def register_and_create_order(full_name, mobile, attribution=None):
 		if reg.status == "Paid":
 			return {"status": "paid", "registration": reg.name, "token": reg.public_token}
 		reg.full_name = full_name
+		reg.status = "Unpaid"  # a retry after a failed attempt is back to unpaid
 		reused = _reusable_order(reg)
 		if reused:
 			reg.save(ignore_permissions=True)
@@ -177,11 +178,32 @@ def registration_status(token):
 
 # --- webhook hook -----------------------------------------------------------------------------
 
+def _registration_for_order(order_doc):
+	"""The registration an order belongs to.
+
+	Usually that's the one currently linked to it. But a student can open two payment attempts
+	and pay on the older one; that order is no longer linked, yet its capture must still count.
+	So fall back to the registration id stamped into the order's notes at creation.
+	"""
+	name = frappe.db.get_value(DOCTYPE, {"razorpay_order": order_doc.name}, "name")
+	if name:
+		return name
+	try:
+		notes = frappe.parse_json(order_doc.notes) if order_doc.notes else {}
+	except Exception:
+		return None
+	if isinstance(notes, dict) and notes.get("product") == PRODUCT_TAG:
+		candidate = notes.get("registration")
+		if candidate and frappe.db.exists(DOCTYPE, candidate):
+			return candidate
+	return None
+
+
 def on_razorpay_order_update(order_doc, method=None):
 	"""doc_events hook on Razorpay Order. A no-op for every order that isn't ours."""
 	if not order_doc.has_value_changed("status"):
 		return
-	name = frappe.db.get_value(DOCTYPE, {"razorpay_order": order_doc.name}, "name")
+	name = _registration_for_order(order_doc)
 	if not name:
 		return
 
@@ -193,6 +215,7 @@ def on_razorpay_order_update(order_doc, method=None):
 		reg.status = "Paid"
 		reg.paid_at = now_datetime()
 		reg.payment_id = order_doc.payment_id
+		reg.razorpay_order = order_doc.name  # point at the order that actually paid
 		reg.save(ignore_permissions=True)
 		frappe.enqueue(
 			"humain_learning.hailm_hackathon.services.fulfil",
@@ -201,7 +224,8 @@ def on_razorpay_order_update(order_doc, method=None):
 			timeout=120,
 			enqueue_after_commit=True,
 		)
-	elif order_doc.status == "Failed":
+	elif order_doc.status == "Failed" and reg.razorpay_order == order_doc.name:
+		# only the current attempt can fail the registration, not a stale older one
 		reg.status = "Failed"
 		reg.save(ignore_permissions=True)
 
