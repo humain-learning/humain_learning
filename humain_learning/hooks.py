@@ -152,10 +152,6 @@ doc_events = {
     },
 	"CRM Deal": {
 		"on_update": "humain_learning.meta_capi.hooks.handle_meta_capi_event"
-	},
-	"Razorpay Order": {
-		# Mirrors payment status onto HAILM Hackathon Registrations; no-op for other orders.
-		"on_update": "humain_learning.hailm_hackathon.services.on_razorpay_order_update"
 	}
 }
 

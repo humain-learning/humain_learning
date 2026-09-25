@@ -23,11 +23,7 @@ class RazorpayOrder(Document):
 		if self.coupon_code:
 			tick_up_coupon(self.coupon_code)
 
-		# Not every order has a CRM Deal (HAILM Hackathon orders don't). Without this guard,
-		# get_doc("CRM Deal", None) raises inside on_update and rolls back the webhook, so the
-		# order would never be marked Paid.
-		if self.deal:
-			mark_deal_as_won(self.deal,self.amount_paid)
+		mark_deal_as_won(self.deal,self.amount_paid)
 		# create_students(self)
 		# From Learner's table, create students and create enrollments.
 		# post sale communications

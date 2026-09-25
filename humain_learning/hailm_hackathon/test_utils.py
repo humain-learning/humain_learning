@@ -107,11 +107,101 @@ class TestMoney(unittest.TestCase):
 		with self.assertRaises(ValueError):
 			u.amount_to_paise(0)
 
-	def test_gst_inclusive(self):
-		base, gst = u.gst_inclusive_breakup(1180)
-		self.assertEqual((base, gst), (1000.0, 180.0))
-		base, gst = u.gst_inclusive_breakup(999)
-		self.assertAlmostEqual(base + gst, 999, places=2)
+
+class TestPaymentPageUrl(unittest.TestCase):
+	def test_prefills_name_phone_and_registration(self):
+		from urllib.parse import parse_qs, urlsplit
+
+		url = u.build_payment_page_url("https://pages.razorpay.com/pl_ABC123/view", "Aarav Sharma", "+91 98765 43210", "HHR-00012")
+		parts = urlsplit(url)
+		self.assertEqual(parts.netloc + parts.path, "pages.razorpay.com/pl_ABC123/view")
+		q = parse_qs(parts.query)
+		self.assertEqual(q["phone"], ["9876543210"])  # 10 digits, as Razorpay's docs show
+		self.assertEqual(q["full_name"], ["Aarav Sharma"])
+		self.assertEqual(q["registration_id"], ["HHR-00012"])
+
+	def test_keeps_existing_query_params(self):
+		from urllib.parse import parse_qs, urlsplit
+
+		url = u.build_payment_page_url("https://pages.razorpay.com/pl_ABC/view?utm_source=wa", "A B", "9876543210", "HHR-00001")
+		self.assertEqual(parse_qs(urlsplit(url).query)["utm_source"], ["wa"])
+
+
+class TestSignature(unittest.TestCase):
+	SECRET = "whsec_test"
+	BODY = b'{"event":"payment.captured"}'
+
+	def _sign(self, body, secret):
+		import hashlib
+		import hmac
+
+		return hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
+
+	def test_valid(self):
+		self.assertTrue(u.verify_razorpay_signature(self.BODY, self._sign(self.BODY, self.SECRET), self.SECRET))
+
+	def test_tampered_body_or_wrong_secret(self):
+		sig = self._sign(self.BODY, self.SECRET)
+		self.assertFalse(u.verify_razorpay_signature(self.BODY + b" ", sig, self.SECRET))
+		self.assertFalse(u.verify_razorpay_signature(self.BODY, sig, "other"))
+
+	def test_missing_pieces_never_pass(self):
+		# In particular: an unset secret must reject, not accept.
+		sig = self._sign(self.BODY, self.SECRET)
+		self.assertFalse(u.verify_razorpay_signature(self.BODY, sig, None))
+		self.assertFalse(u.verify_razorpay_signature(self.BODY, None, self.SECRET))
+		self.assertFalse(u.verify_razorpay_signature(b"", sig, self.SECRET))
+
+
+class TestMatchKeys(unittest.TestCase):
+	def test_finds_registration_id_and_phones_in_any_note_key(self):
+		payment = {"contact": "+919876543210",
+				   "notes": {"full_name": "Aarav", "registration_id": "HHR-00012", "phone": "9123456789", "email": "a@b.co"}}
+		ids, mobiles = u.payment_match_keys(payment)
+		self.assertEqual(ids, ["HHR-00012"])
+		self.assertEqual(mobiles, ["+919123456789", "+919876543210"])
+
+	def test_list_notes_and_no_notes(self):
+		self.assertEqual(u.payment_match_keys({"notes": [], "contact": "9876543210"}), ([], ["+919876543210"]))
+		self.assertEqual(u.payment_match_keys({}), ([], []))
+
+
+class TestChooseRegistration(unittest.TestCase):
+	"""The gate that decides whether an account-wide payment is a hackathon payment."""
+
+	PRICE = 999
+
+	def choose(self, payment, existing=(), unpaid=None):
+		unpaid = unpaid or {}
+		return u.choose_registration(payment, self.PRICE, lambda n: n in existing, lambda m: unpaid.get(m))
+
+	def test_registration_id_is_an_exact_match(self):
+		p = {"amount": 99900, "notes": {"registration_id": "HHR-00012"}, "contact": "+919000000000"}
+		self.assertEqual(self.choose(p, existing={"HHR-00012"}), ("HHR-00012", "Registration ID"))
+
+	def test_phone_and_amount_match(self):
+		p = {"amount": 99900, "notes": {}, "contact": "+919876543210"}
+		self.assertEqual(self.choose(p, unpaid={"+919876543210": "HHR-00007"}), ("HHR-00007", "Phone + amount"))
+
+	def test_phone_alone_is_never_enough(self):
+		# A registered parent paying for something else on the same Razorpay account.
+		p = {"amount": 1250000, "notes": {}, "contact": "+919876543210"}
+		name, why = self.choose(p, unpaid={"+919876543210": "HHR-00007"})
+		self.assertIsNone(name)
+		self.assertIn("amount", why)
+
+	def test_already_paid_phone_does_not_match(self):
+		# unpaid lookup only returns Unpaid rows, so a paid registration can't be re-matched by phone
+		p = {"amount": 99900, "notes": {}, "contact": "+919876543210"}
+		self.assertEqual(self.choose(p, unpaid={})[0], None)
+
+	def test_unknown_registration_id_falls_back_to_phone(self):
+		p = {"amount": 99900, "notes": {"registration_id": "HHR-99999"}, "contact": "+919876543210"}
+		self.assertEqual(self.choose(p, existing=set(), unpaid={"+919876543210": "HHR-00007"}), ("HHR-00007", "Phone + amount"))
+
+	def test_no_price_configured_rejects_phone_matches(self):
+		p = {"amount": 99900, "notes": {}, "contact": "+919876543210"}
+		self.assertIsNone(u.choose_registration(p, None, lambda n: False, lambda m: "HHR-00007")[0])
 
 
 if __name__ == "__main__":

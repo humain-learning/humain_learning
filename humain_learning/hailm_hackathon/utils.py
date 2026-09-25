@@ -57,6 +57,10 @@ def clean_full_name(raw):
 	return name
 
 
+def first_name(full_name):
+	return split_name(full_name)[0]
+
+
 def split_name(full_name):
 	parts = full_name.split(" ", 1)
 	return parts[0], (parts[1] if len(parts) > 1 else "")
@@ -126,17 +130,93 @@ def build_aisensy_payload(api_key, campaign_name, mobile, first_name, values, pa
 
 
 def amount_to_paise(amount):
-	"""Razorpay takes integer paise. The existing course flow used cint(amount)*100, which
-	silently drops paise; round instead."""
+	"""Razorpay reports amounts in integer paise."""
 	paise = int(round(float(amount) * 100))
 	if paise <= 0:
 		raise ValueError("Amount must be positive.")
 	return paise
 
 
-def gst_inclusive_breakup(amount, rate=0.18):
-	"""The offer price is the all-in amount the student pays. Split out the GST component
-	for the record, rather than adding GST on top like the course checkout does."""
-	amount = float(amount)
-	base = round(amount / (1 + rate), 2)
-	return base, round(amount - base, 2)
+# --- Razorpay Payment Page ---------------------------------------------------------------------
+
+REGISTRATION_ID = re.compile(r"\bHHR-\d{5,}\b")
+
+
+def build_payment_page_url(page_url, full_name, mobile, registration_name):
+	"""Prefill the hosted Razorpay Payment Page.
+
+	Razorpay pre-populates fields from query params on the page's *long* URL
+	(pages.razorpay.com/pl_XXXX/view). `phone` is a standard field; `full_name` and
+	`registration_id` are custom input fields, named in lowercase with underscores. Params for
+	fields the page doesn't have are simply ignored, so this is safe either way.
+	"""
+	from urllib.parse import urlencode, urlsplit, urlunsplit, parse_qsl
+
+	parts = urlsplit(page_url)
+	query = dict(parse_qsl(parts.query))
+	query.update({
+		"phone": normalize_indian_mobile(mobile)[3:],  # 10 digits, as in Razorpay's own examples
+		"full_name": full_name,
+		"registration_id": registration_name,
+	})
+	return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
+
+
+def verify_razorpay_signature(raw_body, signature, secret):
+	"""Razorpay signs the raw webhook body with HMAC-SHA256 using the webhook secret."""
+	import hashlib
+	import hmac
+
+	if not (raw_body and signature and secret):
+		return False
+	body = raw_body if isinstance(raw_body, bytes) else raw_body.encode()
+	expected = hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
+	return hmac.compare_digest(expected, signature)
+
+
+def choose_registration(payment, expected_amount, registration_exists, unpaid_registration_for_mobile):
+	"""Decide which registration a captured payment belongs to. Returns (name, how) or (None, why).
+
+	Webhooks are account-wide, so this is the gate that keeps other payments out:
+	  1. an explicit registration id in the notes is an exact match;
+	  2. otherwise the phone must match an Unpaid registration AND the amount must equal the
+	     hackathon price. Phone alone is never enough.
+	The two callables are DB lookups, injected so this stays testable without a bench.
+	"""
+	registration_ids, mobiles = payment_match_keys(payment)
+	for reg_id in registration_ids:
+		if registration_exists(reg_id):
+			return reg_id, "Registration ID"
+
+	if not expected_amount or int(payment.get("amount") or 0) != amount_to_paise(expected_amount):
+		return None, "amount is not the hackathon price"
+	for mobile in mobiles:
+		name = unpaid_registration_for_mobile(mobile)
+		if name:
+			return name, "Phone + amount"
+	return None, "no unpaid registration with that phone"
+
+
+def payment_match_keys(payment):
+	"""What we can match a Payment Page payment on.
+
+	Returns (registration_ids, mobiles). Payment Page input fields land in the payment's notes;
+	we don't depend on their exact keys, we just scan every value. `contact` is the phone the
+	payer used at checkout.
+	"""
+	notes = payment.get("notes") or {}
+	values = list(notes.values()) if isinstance(notes, dict) else list(notes or [])
+	registration_ids, mobiles = [], []
+	for value in values:
+		text = str(value)
+		registration_ids += REGISTRATION_ID.findall(text)
+		try:
+			mobiles.append(normalize_indian_mobile(text))
+		except ValidationError:
+			pass
+	try:
+		mobiles.append(normalize_indian_mobile(payment.get("contact")))
+	except ValidationError:
+		pass
+	# de-duplicate, keep order: an explicit registration id beats any phone
+	return list(dict.fromkeys(registration_ids)), list(dict.fromkeys(mobiles))

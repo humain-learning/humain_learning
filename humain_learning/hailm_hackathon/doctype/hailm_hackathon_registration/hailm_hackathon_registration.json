@@ -2,7 +2,7 @@
  "actions": [],
  "autoname": "HHR-.#####",
  "creation": "2026-09-25 12:00:00.000000",
- "description": "One row per phone number submitted on the Humain Learning x HAILM Hackathon page, paid or not.",
+ "description": "One row per phone number submitted on the Humain Learning x HAILM Hackathon page, paid or not. Payment happens on a Razorpay Payment Page.",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -12,8 +12,9 @@
   "amount",
   "column_break_main",
   "paid_at",
+  "amount_paid",
   "payment_id",
-  "razorpay_order",
+  "match_method",
   "existing_lead",
   "fulfilment_section",
   "lms_discount_code",
@@ -24,6 +25,9 @@
   "whatsapp_sent_at",
   "whatsapp_response",
   "fulfilment_error",
+  "payment_section",
+  "extra_payments",
+  "webhook_payload",
   "attribution_section",
   "utm_source",
   "utm_medium",
@@ -56,14 +60,15 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Payment Status",
-   "options": "Unpaid\nPaid\nFailed",
+   "options": "Unpaid\nPaid",
    "read_only": 1
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
-   "label": "Amount (INR, incl. GST)",
-   "read_only": 1
+   "label": "Price (INR, incl. GST)",
+   "read_only": 1,
+   "description": "The hackathon price when this person registered."
   },
   {
    "fieldname": "column_break_main",
@@ -76,17 +81,25 @@
    "read_only": 1
   },
   {
-   "fieldname": "payment_id",
-   "fieldtype": "Data",
-   "label": "Razorpay Payment ID",
+   "fieldname": "amount_paid",
+   "fieldtype": "Currency",
+   "label": "Amount Paid (INR)",
    "read_only": 1
   },
   {
-   "fieldname": "razorpay_order",
-   "fieldtype": "Link",
-   "label": "Razorpay Order",
-   "options": "Razorpay Order",
-   "read_only": 1
+   "fieldname": "payment_id",
+   "fieldtype": "Data",
+   "label": "Razorpay Payment ID",
+   "read_only": 1,
+   "description": "From the Razorpay Payment Page."
+  },
+  {
+   "fieldname": "match_method",
+   "fieldtype": "Select",
+   "label": "Matched By",
+   "read_only": 1,
+   "options": "\nRegistration ID\nPhone + amount",
+   "description": "How the Razorpay payment was tied to this registration. 'Registration ID' is exact; 'Phone + amount' is worth a glance."
   },
   {
    "description": "A CRM Lead with the same mobile number, if one already existed. Linked for context only.",
@@ -153,6 +166,27 @@
    "fieldtype": "Small Text",
    "label": "Last Fulfilment Error",
    "read_only": 1
+  },
+  {
+   "fieldname": "payment_section",
+   "fieldtype": "Section Break",
+   "label": "Razorpay Payment",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "extra_payments",
+   "fieldtype": "Small Text",
+   "label": "Extra Payments (refund review)",
+   "read_only": 1,
+   "description": "Razorpay payment ids received after this registration was already paid."
+  },
+  {
+   "fieldname": "webhook_payload",
+   "fieldtype": "Code",
+   "options": "JSON",
+   "label": "Payment Payload",
+   "read_only": 1,
+   "description": "The captured payment as Razorpay sent it."
   },
   {
    "collapsible": 1,
